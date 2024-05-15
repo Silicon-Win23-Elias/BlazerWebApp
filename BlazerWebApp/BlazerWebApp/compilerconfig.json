@@ -1,0 +1,14 @@
+﻿[
+  {
+    "outputFile": "Components/Account/Pages/Manage/Register.razor.css",
+    "inputFile": "Components/Account/Pages/Manage/Register.razor.scss"
+  },
+  {
+    "outputFile": "Components/Account/Pages/Register.razor.css",
+    "inputFile": "Components/Account/Pages/Register.razor.scss"
+  },
+  {
+    "outputFile": "wwwroot/Site.css",
+    "inputFile": "wwwroot/Site.scss"
+  }
+]

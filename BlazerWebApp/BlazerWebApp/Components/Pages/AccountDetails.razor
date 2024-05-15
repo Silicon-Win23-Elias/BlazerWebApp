@@ -1,0 +1,33 @@
+﻿@page "/account/details"
+@rendermode InteractiveServer
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+
+<section id="account">
+    <div class="container">
+
+
+        @if (user != null)
+        {
+            <AccountLeftSide User="user" />
+            <Details User="user" />
+        }
+        else
+        {
+            <p>Loading user data...</p>
+        }
+
+    </div>
+</section>
+
+@code {
+    private ApplicationUser user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userClaims = authenticationState.User;
+
+        user = await UserManager.GetUserAsync(userClaims);
+        return;
+    }
+}

@@ -1,0 +1,101 @@
+header {
+    padding: 15px 0;
+
+    .container {
+        display: grid;
+        align-items: center;
+        grid-template-columns: 1fr auto;
+        grid-template-areas: "logo mobile" "buttons buttons" "menu menu";
+        row-gap: 20px;
+
+        @include lg {
+            grid-template-columns: auto 1fr  auto;
+            grid-template-areas: "logo menu buttons";
+            gap: 40px;
+        }
+
+        #logo {
+            grid-area: logo;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .hide-conditional {
+            display: none;
+        }
+
+        #menu {
+            grid-area: menu;
+            justify-self: center;
+
+            @include lg {
+                display: block;
+                justify-self: baseline;
+            }
+
+            nav {
+                display: flex;
+                gap: 15px;
+            }
+
+            .menu-link {
+
+                &.hide {
+                    display: none;
+                }
+            }
+        }
+
+        .button {
+            grid-area: buttons;
+            justify-self: center;
+
+            img {
+                width: 44px;
+                border-radius: 50%;
+            }
+
+            @include lg {
+                display: flex;
+            }
+        }
+
+        .buttons {
+            grid-area: buttons;
+
+            p {
+                margin-bottom: 0;
+            }
+
+            a {
+                margin-bottom: 10px;
+                text-decoration: none;
+
+                @include lg {
+                    margin-bottom: 0;
+                    margin-left: 10px;
+                }
+            }
+
+            @include lg {
+                display: flex;
+                flex-direction: row;
+            }
+        }
+
+        .btn-mobile {
+            grid-area: mobile;
+            display: block;
+            font-size: 24px;
+            border: none;
+            background-color: $white;
+            color: $theme;
+
+            @include lg {
+                display: none;
+            }
+        }
+    }
+}

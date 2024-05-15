@@ -1,0 +1,194 @@
+.saved-items {
+    flex: 2;
+
+    @media(min-width: 768px) {
+        padding-left: 30px;
+    }
+
+    @media(min-width: 992px) {
+        padding-left: 100px;
+        flex: 3;
+    }
+
+    .title-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-bottom: 20px;
+
+        @media(min-width: 768px) {
+            justify-content: space-between;
+            flex-direction: row;
+        }
+
+        .btn-delete {
+            align-self: center;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 14px;
+            padding: 8px 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            background: #FFFFFF;
+            color: #EF4444;
+            border: 1px solid #f4cacaf4;
+
+            &:hover {
+                text-decoration: none;
+                background: #565973;
+                color: #FFFFFF;
+                border: 1px solid #565973;
+            }
+        }
+    }
+
+    .courses {
+        display: grid;
+        gap: 2.5rem;
+        grid-template-columns: 1fr;
+
+        @media (min-width: 768px) {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        @media (min-width: 1024px) {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .oneCourse {
+            position: relative;
+            box-shadow: 1px 1px 6px 3px #E2E5F1;
+            border-radius: 6px;
+            transition: all 0.15s ease-in-out;
+
+            &:hover {
+                box-shadow: 1px 1px 6px 3px #B4B7C9;
+                cursor: pointer;
+            }
+
+            .bestSeller {
+                background-color: #22C55E;
+                color: #ffffff;
+                display: inline;
+                padding: 0rem 0.5rem;
+                border-radius: 6px;
+                position: absolute;
+                top: 1rem;
+                left: 1rem;
+            }
+
+            .btn-tooltip {
+                .saveCourseBtn {
+                    position: absolute;
+                    top: 1.2rem;
+                    right: 1rem;
+                    font-size: 2.5rem;
+                    color: #EFF2FC;
+                    transition: color 0.15s ease-in-out;
+
+                    &:hover {
+                        color: #6366F1;
+                    }
+                }
+
+                .removeCourseBtn {
+                    position: absolute;
+                    top: 1.2rem;
+                    right: 1rem;
+                    font-size: 2.5rem;
+                    color: #6366F1;
+                    transition: color 0.15s ease-in-out;
+                }
+
+                .tool-tip {
+                    position: absolute;
+                    color: #ffffff;
+                    background-color: #0B0F19;
+                    padding: 0.3rem 0.9rem;
+                    border-radius: 6px;
+                    font-weight: 300;
+                    top: -1.7rem;
+                    right: -0.5rem;
+                    opacity: 0;
+                    transition: all 0.25s ease-in-out;
+                    visibility: hidden;
+                }
+
+                &:hover {
+                    .tool-tip {
+                        visibility: visible;
+                        opacity: 1;
+                    }
+                }
+            }
+
+            .oneCourseLink {
+                text-decoration: none;
+
+                img {
+                    width: 100%;
+                    border-radius: 6px;
+                }
+
+
+                .course-info {
+                    .header5 {
+                        margin-top: 1rem;
+                        padding-left: 1rem;
+                        padding-right: 1rem;
+                        font-size: 20px;
+                    }
+
+                    .author {
+                        color: #565973;
+                        padding-left: 1rem;
+                        margin-bottom: 0.5rem;
+                    }
+
+                    .prices {
+                        display: flex;
+                        gap: 0.5rem;
+                        align-items: center;
+
+
+                        .price {
+                            color: #6366F1;
+                            font-weight: 600;
+                            padding-left: 1rem;
+                        }
+
+                        .color-danger {
+                            color: #EF4444;
+                        }
+
+                        .reducedPrice {
+                            color: #9397AD;
+                            text-decoration: line-through;
+                        }
+                    }
+
+                    .hours-and-rating {
+                        border-top: 1px solid #E2E5F1;
+                        padding-top: 1rem;
+                        display: flex;
+                        flex-direction: row;
+                        margin-left: 1rem;
+                        margin-right: 1rem;
+
+                        i {
+                            margin-right: 0.5rem;
+                        }
+
+                        p {
+                            margin-right: 1.5rem;
+                            margin-top: -0.15rem;
+                            color: #9397AD;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

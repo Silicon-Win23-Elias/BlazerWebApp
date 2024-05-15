@@ -1,0 +1,95 @@
+.notifications {
+    flex: 2;
+
+    @media(min-width: 768px) {
+        padding-left: 30px;
+    }
+
+    @media(min-width: 992px) {
+        padding-left: 100px;
+        flex: 3;
+    }
+
+    label {
+        font-weight: 600;
+        color: #0B0F19;
+    }
+
+    h1 {
+        text-align: center;
+
+        @media(min-width: 768px) {
+            text-align: left;
+        }
+    }
+
+    .message {
+        text-align: center;
+
+        @media(min-width: 768px) {
+            text-align: left;
+        }
+
+        &.error {
+            color: #EF4444;
+        }
+
+        &.success {
+            color: #048316;
+        }
+    }
+
+    .label-input {
+        display: block;
+        flex: 1;
+        padding-bottom: 30px;
+        padding-top: 30px;
+    }
+
+    .input {
+        display: block;
+        width: 100%;
+        border: 1px solid #E2E5F1;
+        border-radius: 8px;
+        outline-color: #6366F1;
+        padding: 12px 10px;
+        background-color: #FFFFFF;
+
+        &:disabled {
+            background-color: #E2E5F1;
+        }
+
+        &.input-validation-error {
+            color: #EF4444;
+            border-color: #EF4444;
+        }
+    }
+
+    .btn-and-text {
+        display: flex;
+        gap: 20px;
+        padding-bottom: 20px;
+
+        .btn-switch {
+            align-self: baseline;
+        }
+
+        .text {
+
+            h6 {
+                font-weight: bold;
+            }
+
+            .sub-text {
+                font-size: 14px;
+                color: #9397AD;
+            }
+        }
+    }
+
+    .buttons {
+        display: flex;
+        gap: 20px;
+        padding-top: 60px;
+    }
+}

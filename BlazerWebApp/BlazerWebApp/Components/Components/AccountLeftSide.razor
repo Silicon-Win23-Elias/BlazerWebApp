@@ -1,0 +1,60 @@
+﻿
+
+
+<div class="profile">
+    <div class="image">
+        <img src="/images/profile_placeholder.jpg" alt="Profile Image">
+        <form>
+            <input id="uploadFile" type="file" name="file" hidden />
+            <label for="uploadFile" class="upload fa-solid fa-arrows-rotate"></label>
+        </form>
+    </div>
+    <div class="">
+        <h5>@UserProfile.FirstName @UserProfile.LastName</h5>
+        <p>@UserProfile.Email</p>
+    </div>
+    <div class="menu">
+        <NavLink href="/account/details" class="btn-white"><i class="fa-solid fa-gear"></i> Account Details</NavLink>
+        <NavLink href="/account/security" class="btn-white"><i class="fa-solid fa-lock"></i> Security</NavLink>
+        <NavLink href="/account/notifications" class="btn-white"><i class="fa-solid fa-bell"></i> Notifications</NavLink>
+        <NavLink href="/account/messages" class="btn-white"><i class="fa-solid fa-message"></i> Messages</NavLink>
+        <NavLink href="/account/savedcourses" class="btn-white"><i class="fa-solid fa-bookmark"></i> Saved Courses</NavLink>
+        <form action="Account/Logout" method="post">
+            <AntiforgeryToken />
+            <input type="hidden" name="ReturnUrl" value="" />
+            <button type="submit" class="btn-theme"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button>
+        </form> 
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private string? Email { get; set; }
+    
+    [Parameter]
+    public ApplicationUser User { get; set; } = null!;
+
+    public UserModel UserProfile { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (User != null)
+        {
+            UserProfile.FirstName = User.FirstName;
+            UserProfile.LastName = User.LastName;
+            UserProfile.Email = User.Email!;
+        }
+    }
+
+    private void SignOut()
+    {
+        RedirectManager.RedirectTo("Account/Logout");
+    }
+
+    public class UserModel
+    {
+        public string FirstName { get; set; } = null!;
+        public string LastName { get; set; } = null!;
+        public string Email { get; set; } = null!;
+    }
+}

@@ -1,0 +1,281 @@
+﻿@page "/Courses"
+
+<section class="courses-section">
+    <div class="container">
+        <div class="title-inputs">
+            <h1 class="header1">Courses</h1>
+            <select class="select-input">
+                <option value="categories-all">All categories</option>
+                <option value="category1">Best seller</option>
+                <option value="category2">Reduced price</option>
+                <option value="category3">Saved courses</option>
+            </select>
+            <input id="courseSearch" class="search-input" type="text" placeholder="Search courses">
+            <i class="fa-regular fa-magnifying-glass" style="color: #33354D;"></i>
+        </div>
+        <div class="courses-all">
+            <div class="oneCourse">
+                <div class="btn-tooltip">
+                    <form method="post">
+                        <input type="hidden" name="courseId" value="" />
+                        <i class="saveCourseBtn fa-sharp fa-regular fa-circle-bookmark"></i>
+                        <p class="tool-tip">Save</p>
+                    </form>
+                </div>
+                <p class="bestSeller">Best seller</p>
+                <a asp-controller="Courses" asp-action="SingleCourse" class="oneCourseLink">
+                    <img src="images/course1.svg" alt="Image from the course">
+                    <div class="course-info">
+                        <h5 class="header5">Fullstack Web Developer Course from Scratch</h5>
+                        <p class="author">By Robert Fox</p>
+                        <div class="prices">
+                            <p class="price color-danger">$123</p>
+                            <p class="reducedPrice">$92</p>
+                            @* <p class="price">$32</p> *@
+                        </div>
+                        <div class="hours-and-rating">
+                            <i class="fa-regular fa-clock" style="color: #9397AD;"></i>
+                            <p class="hours text-s">196 hours</p>
+                            <i class="fa-regular fa-thumbs-up" style="color: #9397AD;"></i>
+                            <p class="rating text-s">53% (372)</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="oneCourse">
+                <div class="btn-tooltip">
+                    <form method="post">
+                        <input type="hidden" name="courseId" value="" />
+                        <i class="saveCourseBtn fa-sharp fa-regular fa-circle-bookmark"></i>
+                        <p class="tool-tip">Save</p>
+                    </form>
+                </div>
+                <p class="bestSeller">Best seller</p>
+                <a asp-controller="Courses" asp-action="SingleCourse" class="oneCourseLink">
+                    <img src="images/course1.svg" alt="Image from the course">
+                    <div class="course-info">
+                        <h5 class="header5">Fullstack Web Developer Course from Scratch</h5>
+                        <p class="author">By Robert Fox</p>
+                        <div class="prices">
+                            <p class="price color-danger">$123</p>
+                            <p class="reducedPrice">$92</p>
+                            @* <p class="price">$32</p> *@
+                        </div>
+                        <div class="hours-and-rating">
+                            <i class="fa-regular fa-clock" style="color: #9397AD;"></i>
+                            <p class="hours text-s">196 hours</p>
+                            <i class="fa-regular fa-thumbs-up" style="color: #9397AD;"></i>
+                            <p class="rating text-s">53% (372)</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="oneCourse">
+                <div class="btn-tooltip">
+                    <form method="post">
+                        <input type="hidden" name="courseId" value="" />
+                        <i class="saveCourseBtn fa-sharp fa-regular fa-circle-bookmark"></i>
+                        <p class="tool-tip">Save</p>
+                    </form>
+                </div>
+                <p class="bestSeller">Best seller</p>
+                <a asp-controller="Courses" asp-action="SingleCourse" class="oneCourseLink">
+                    <img src="images/course1.svg" alt="Image from the course">
+                    <div class="course-info">
+                        <h5 class="header5">Fullstack Web Developer Course from Scratch</h5>
+                        <p class="author">By Robert Fox</p>
+                        <div class="prices">
+                            <p class="price color-danger">$123</p>
+                            <p class="reducedPrice">$92</p>
+                            @* <p class="price">$32</p> *@
+                        </div>
+                        <div class="hours-and-rating">
+                            <i class="fa-regular fa-clock" style="color: #9397AD;"></i>
+                            <p class="hours text-s">196 hours</p>
+                            <i class="fa-regular fa-thumbs-up" style="color: #9397AD;"></i>
+                            <p class="rating text-s">53% (372)</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="oneCourse">
+                <div class="btn-tooltip">
+                    <form method="post">
+                        <input type="hidden" name="courseId" value="" />
+                        <i class="saveCourseBtn fa-sharp fa-regular fa-circle-bookmark"></i>
+                        <p class="tool-tip">Save</p>
+                    </form>
+                </div>
+                <p class="bestSeller">Best seller</p>
+                <a asp-controller="Courses" asp-action="SingleCourse" class="oneCourseLink">
+                    <img src="images/course1.svg" alt="Image from the course">
+                    <div class="course-info">
+                        <h5 class="header5">Fullstack Web Developer Course from Scratch</h5>
+                        <p class="author">By Robert Fox</p>
+                        <div class="prices">
+                            <p class="price color-danger">$123</p>
+                            <p class="reducedPrice">$92</p>
+                            @* <p class="price">$32</p> *@
+                        </div>
+                        <div class="hours-and-rating">
+                            <i class="fa-regular fa-clock" style="color: #9397AD;"></i>
+                            <p class="hours text-s">196 hours</p>
+                            <i class="fa-regular fa-thumbs-up" style="color: #9397AD;"></i>
+                            <p class="rating text-s">53% (372)</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="oneCourse">
+                <div class="btn-tooltip">
+                    <form method="post">
+                        <input type="hidden" name="courseId" value="" />
+                        <i class="saveCourseBtn fa-sharp fa-regular fa-circle-bookmark"></i>
+                        <p class="tool-tip">Save</p>
+                    </form>
+                </div>
+                <p class="bestSeller">Best seller</p>
+                <a asp-controller="Courses" asp-action="SingleCourse" class="oneCourseLink">
+                    <img src="images/course1.svg" alt="Image from the course">
+                    <div class="course-info">
+                        <h5 class="header5">Fullstack Web Developer Course from Scratch</h5>
+                        <p class="author">By Robert Fox</p>
+                        <div class="prices">
+                            <p class="price color-danger">$123</p>
+                            <p class="reducedPrice">$92</p>
+                            @* <p class="price">$32</p> *@
+                        </div>
+                        <div class="hours-and-rating">
+                            <i class="fa-regular fa-clock" style="color: #9397AD;"></i>
+                            <p class="hours text-s">196 hours</p>
+                            <i class="fa-regular fa-thumbs-up" style="color: #9397AD;"></i>
+                            <p class="rating text-s">53% (372)</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="oneCourse">
+                <div class="btn-tooltip">
+                    <form method="post">
+                        <input type="hidden" name="courseId" value="" />
+                        <i class="saveCourseBtn fa-sharp fa-regular fa-circle-bookmark"></i>
+                        <p class="tool-tip">Save</p>
+                    </form>
+                </div>
+                <p class="bestSeller">Best seller</p>
+                <a asp-controller="Courses" asp-action="SingleCourse" class="oneCourseLink">
+                    <img src="images/course1.svg" alt="Image from the course">
+                    <div class="course-info">
+                        <h5 class="header5">Fullstack Web Developer Course from Scratch</h5>
+                        <p class="author">By Robert Fox</p>
+                        <div class="prices">
+                            <p class="price color-danger">$123</p>
+                            <p class="reducedPrice">$92</p>
+                            @* <p class="price">$32</p> *@
+                        </div>
+                        <div class="hours-and-rating">
+                            <i class="fa-regular fa-clock" style="color: #9397AD;"></i>
+                            <p class="hours text-s">196 hours</p>
+                            <i class="fa-regular fa-thumbs-up" style="color: #9397AD;"></i>
+                            <p class="rating text-s">53% (372)</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="oneCourse">
+                <div class="btn-tooltip">
+                    <form method="post">
+                        <input type="hidden" name="courseId" value="" />
+                        <i class="saveCourseBtn fa-sharp fa-regular fa-circle-bookmark"></i>
+                        <p class="tool-tip">Save</p>
+                    </form>
+                </div>
+                <p class="bestSeller">Best seller</p>
+                <a asp-controller="Courses" asp-action="SingleCourse" class="oneCourseLink">
+                    <img src="images/course1.svg" alt="Image from the course">
+                    <div class="course-info">
+                        <h5 class="header5">Fullstack Web Developer Course from Scratch</h5>
+                        <p class="author">By Robert Fox</p>
+                        <div class="prices">
+                            <p class="price color-danger">$123</p>
+                            <p class="reducedPrice">$92</p>
+                            @* <p class="price">$32</p> *@
+                        </div>
+                        <div class="hours-and-rating">
+                            <i class="fa-regular fa-clock" style="color: #9397AD;"></i>
+                            <p class="hours text-s">196 hours</p>
+                            <i class="fa-regular fa-thumbs-up" style="color: #9397AD;"></i>
+                            <p class="rating text-s">53% (372)</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="oneCourse">
+                <div class="btn-tooltip">
+                    <form method="post">
+                        <input type="hidden" name="courseId" value="" />
+                        <i class="saveCourseBtn fa-sharp fa-regular fa-circle-bookmark"></i>
+                        <p class="tool-tip">Save</p>
+                    </form>
+                </div>
+                <p class="bestSeller">Best seller</p>
+                <a asp-controller="Courses" asp-action="SingleCourse" class="oneCourseLink">
+                    <img src="images/course1.svg" alt="Image from the course">
+                    <div class="course-info">
+                        <h5 class="header5">Fullstack Web Developer Course from Scratch</h5>
+                        <p class="author">By Robert Fox</p>
+                        <div class="prices">
+                            <p class="price color-danger">$123</p>
+                            <p class="reducedPrice">$92</p>
+                            @* <p class="price">$32</p> *@
+                        </div>
+                        <div class="hours-and-rating">
+                            <i class="fa-regular fa-clock" style="color: #9397AD;"></i>
+                            <p class="hours text-s">196 hours</p>
+                            <i class="fa-regular fa-thumbs-up" style="color: #9397AD;"></i>
+                            <p class="rating text-s">53% (372)</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="oneCourse">
+                <div class="btn-tooltip">
+                    <form method="post">
+                        <input type="hidden" name="courseId" value="" />
+                        <i class="saveCourseBtn fa-sharp fa-regular fa-circle-bookmark"></i>
+                        <p class="tool-tip">Save</p>
+                    </form>
+                </div>
+                <p class="bestSeller">Best seller</p>
+                <a asp-controller="Courses" asp-action="SingleCourse" class="oneCourseLink">
+                    <img src="images/course1.svg" alt="Image from the course">
+                    <div class="course-info">
+                        <h5 class="header5">Fullstack Web Developer Course from Scratch</h5>
+                        <p class="author">By Robert Fox</p>
+                        <div class="prices">
+                            <p class="price color-danger">$123</p>
+                            <p class="reducedPrice">$92</p>
+                            @* <p class="price">$32</p> *@
+                        </div>
+                        <div class="hours-and-rating">
+                            <i class="fa-regular fa-clock" style="color: #9397AD;"></i>
+                            <p class="hours text-s">196 hours</p>
+                            <i class="fa-regular fa-thumbs-up" style="color: #9397AD;"></i>
+                            <p class="rating text-s">53% (372)</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="page-numbers">
+        <a asp-action="Index" asp-controller="Courses" asp-route-pageNumber="" class="arrow">&lt;</a>
+        <a asp-action="Index" asp-controller="Courses" asp-route-pageNumber="1" class="number active">1</a>
+        <a asp-action="Index" asp-controller="Courses" asp-route-pageNumber="" class="number">2</a>
+        <a asp-action="Index" asp-controller="Courses" asp-route-pageNumber="" class="number">3</a>
+    </div>
+</section>
+
+@code {
+
+}

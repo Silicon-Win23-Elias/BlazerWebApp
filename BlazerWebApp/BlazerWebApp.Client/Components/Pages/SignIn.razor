@@ -1,0 +1,70 @@
+﻿@page "/signin"
+@rendermode InteractiveWebAssembly
+
+<section class="signin-section">
+    <div class="container">
+        <div class="signin-form">
+            @* <p class="text-success">@TempData["WasDeleted"]</p> *@
+            <h1 class="header1">Welcome Back</h1>
+            <p class="m-text">Don’t have an account yet? <NavLink class="signup-link" href="signup">Sign up here.</NavLink></p>
+            <EditForm FormName="signin" Model="signInModel" OnValidSubmit="OnSignIn" method="post" novalidate>
+                <DataAnnotationsValidator/>
+                @*              <div class="error-message">
+                @ViewData["ErrorMessage"]
+                </div> *@
+                <label for="signInEmail">Email</label>
+                <ValidationMessage For="@(() => signInModel.Email)"/>
+                <InputText @bind-Value="signInModel.Email" id="signInEmail" type="email" class="userinput" placeholder="Enter your email address" />
+
+                <label for="signInPassword">Password</label>
+                <ValidationMessage For="@(() => signInModel.Password)" />
+                <InputText @bind-Value="signInModel.Password" id="signInPassword" type="password" class="userinput" placeholder="Enter your password" />
+
+                <div class="remember-me">
+                    <InputCheckbox @bind-Value="signInModel.RememberMe" id="rememberMe" type="checkbox" asp-for="SignInModel.RememberMe" />
+                    <label for="rememberMe">Remember me</label>
+                    <button type="submit" class="btn-theme">Sign in</button>
+
+                    <div class="forgot-password">
+                        <NavLink class="signup-link" href="/">Forgot your password?</NavLink>
+                    </div>
+                </div>
+
+            </EditForm>
+        </div>
+    </div>
+</section>
+
+@code {
+    [SupplyParameterFromForm]
+    public SignInModel signInModel { get; set; } = new SignInModel();
+
+    private void OnSignIn()
+    {
+        try
+        {
+            
+        }
+        catch
+        {
+            
+        }
+    }
+
+
+    public class SignInModel
+    {
+        [DataType(DataType.EmailAddress)]
+        [Required(ErrorMessage = "Invalid email")]
+        [Display(Name = "Email Address", Prompt = "Enter your email address", Order = 0)]
+        public string Email { get; set; } = null!;
+
+        [Display(Name = "Password", Prompt = "Enter your password", Order = 1)]
+        [Required(ErrorMessage = "Invalid password")]
+        [DataType(DataType.Password)]
+        public string Password { get; set; } = null!;
+
+        [Display(Name = "Remember me", Order = 2)]
+        public bool RememberMe { get; set; } = false;
+    }
+}

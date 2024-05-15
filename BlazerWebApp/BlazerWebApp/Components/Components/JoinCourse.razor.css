@@ -1,0 +1,55 @@
+﻿.course-includes {
+  color: #565973;
+  margin-top: 4rem;
+  border-radius: 6px;
+  box-shadow: 1px 1px 6px 3px #E2E5F1;
+  padding: 2rem 0rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+@media (min-width: 1400px) {
+  .course-includes {
+    margin-top: 2rem;
+    height: 450px;
+    padding: 2.5rem 7.5rem 1.5rem 2.5rem;
+    align-items: start;
+  }
+}
+.course-includes .header4 {
+  margin-bottom: 1.5rem;
+  font-weight: 800;
+  color: #0B0F19;
+}
+.course-includes i {
+  margin-right: 0.5rem;
+}
+.course-includes .course-price {
+  gap: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (min-width: 1400px) {
+  .course-includes .course-price {
+    justify-content: start;
+  }
+}
+.course-includes .course-price .header2 {
+  color: #0B0F19;
+  font-size: 2rem;
+  font-weight: 700;
+}
+.course-includes .course-price .xl-text {
+  text-decoration: line-through;
+  font-size: 1.25rem;
+  color: #9397AD;
+}
+.course-includes .course-price p {
+  margin-top: 1rem;
+}
+.course-includes button {
+  padding: 0.75rem 2rem;
+  border: none;
+  transition: all 0.3s;
+}

@@ -1,0 +1,167 @@
+﻿@page "/signup"
+@rendermode InteractiveServer
+@using System.ComponentModel.DataAnnotations
+@using System.Text
+@using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+@using BlazerWebApp.Data
+@using Microsoft.Azure.ServiceBus
+@using Microsoft.EntityFrameworkCore
+@using Newtonsoft.Json
+@using System.Diagnostics
+
+@inject UserManager<ApplicationUser> UserManager
+@inject IUserStore<ApplicationUser> UserStore
+@inject SignInManager<ApplicationUser> SignInManager
+@inject IEmailSender<ApplicationUser> EmailSender
+@inject ILogger<Register> Logger
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+
+<section class="signup-section">
+    <div class="container">
+        <div class="signup-form">
+            <h1 class="header1">Create Account</h1>
+            <p class="m-text">Already have an account? <NavLink class="signin-link" href="/signin">Sign in here.</NavLink></p>
+            @if (!string.IsNullOrEmpty(StatusMessage))
+            {
+                <p class="already-exists-error">@StatusMessage</p>
+            }
+            <EditForm FormName="SignUpForm" Model="SignUpForm" OnValidSubmit="OnValidSubmit" method="post" novalidate>
+                <DataAnnotationsValidator/>
+                <div class="nameinputs">
+                    <div class="firstname">
+                        <label for="firstname-input">First name</label>
+                        <ValidationMessage For="@(() => SignUpForm.FirstName)" />
+                        <InputText @bind-Value="SignUpForm.FirstName" id="firstname-input" class="userinput" placeholder="Enter your first name" />
+                    </div>
+                    <div class="lastname">
+                        <label for="lastname-input">Last name</label>
+                        <ValidationMessage For="@(() => SignUpForm.LastName)" />
+                        <InputText @bind-Value="SignUpForm.LastName" id="lastname-input" class="userinput" placeholder="Enter your last name" />
+                    </div>
+                </div>
+                <label for="email-input">Email</label>
+                <ValidationMessage For="@(() => SignUpForm.Email)" />
+                <InputText @bind-Value="SignUpForm.Email" type="email" id="email-input" class="userinput" placeholder="Enter your email address" />
+
+                <label for="input-password">Password</label>
+                <ValidationMessage For="@(() => SignUpForm.Password)" />
+                <InputText @bind-Value="SignUpForm.Password" type="password" id="input-password" class="userinput" placeholder="Enter your password" />
+
+                <label for="input-confirm-password">Confirm password</label>
+                <ValidationMessage For="@(() => SignUpForm.ConfirmPassword)" />
+                <InputText @bind-Value="SignUpForm.ConfirmPassword" type="password" id="input-confirm-password" class="userinput" placeholder="Confirm your password" />
+
+                <div class="agreement-signup">
+                    <InputCheckbox @bind-Value="SignUpForm.TermsAndCondition" type="checkbox" />
+                    <p>I agree to the <NavLink class="signin-link" href="/terms">Terms</NavLink> & <NavLink class="signin-link" href="/conditions">Conditions</NavLink>.</p>
+                    <ValidationMessage For="@(() => SignUpForm.TermsAndCondition)" />
+                    <button type="submit" class="btn-theme">Sign up</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</section>
+
+@code {
+    [SupplyParameterFromQuery]
+    public string? StatusMessage { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+
+    [SupplyParameterFromForm]
+    public SignUpFormModel SignUpForm { get; set; } = new();
+
+
+    private string ServiceBusConnectionString = "Endpoint=sb://sb-silicon-hl.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=8q4LwR2nJFJtDW2ggc49CnbClwaD+yGBd+ASbGs0X38=";
+
+    public async Task Send(string email)
+    {
+        try
+        {
+            var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new EmailModel {Email = email})));
+
+            var queueClient = new QueueClient(ServiceBusConnectionString, "verification_request");
+            await queueClient.SendAsync(message);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
+
+    public async Task OnValidSubmit(EditContext editContext)
+    {
+        var user = new ApplicationUser
+        {
+            FirstName = SignUpForm.FirstName,
+            LastName = SignUpForm.LastName,
+            UserName = SignUpForm.Email,
+            Email = SignUpForm.Email,
+            ContactEmail = SignUpForm.Email
+        };
+
+        if (!await Context.Users.AnyAsync(x => x.Email == SignUpForm.Email))
+        {
+            var result = await UserManager.CreateAsync(user, SignUpForm.Password);
+
+            if (!result.Succeeded)
+            {
+                StatusMessage = "Unable to register account";
+                return;
+            }
+
+            await Send(SignUpForm.Email);
+
+            if (UserManager.Options.SignIn.RequireConfirmedAccount)
+            {
+                RedirectManager.RedirectTo("Account/RegisterConfirmation", new() { ["email"] = SignUpForm.Email, ["returnUrl"] = ReturnUrl });
+            }
+        }
+        else
+        {
+            StatusMessage = "Email is already in use";
+        }
+    }
+
+    public class SignUpFormModel
+    {
+        [Display(Name = "First Name", Prompt = "Enter your first name", Order = 0)]
+        [Required(ErrorMessage = "Invalid first name")]
+        public string FirstName { get; set; } = null!;
+
+        [Display(Name = "Last Name", Prompt = "Enter your last name", Order = 1)]
+        [Required(ErrorMessage = "Invalid last name")]
+        public string LastName { get; set; } = null!;
+
+        [DataType(DataType.EmailAddress)]
+        [Required(ErrorMessage = "Invalid email")]
+        [Display(Name = "Email Address", Prompt = "Enter your email address", Order = 2)]
+        [RegularExpression("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", ErrorMessage = "Invalid email address")]
+        public string Email { get; set; } = null!;
+
+        [Display(Name = "Password", Prompt = "Enter your password", Order = 3)]
+        [Required(ErrorMessage = "Invalid password")]
+        [DataType(DataType.Password)]
+        [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()\\-_=+{};:,<.>]).{8,}$", ErrorMessage = "Invalid password")]
+        public string Password { get; set; } = null!;
+
+        [Display(Name = "Confirm password", Prompt = "Confirm your password", Order = 4)]
+        [Required(ErrorMessage = "Password doesn't match")]
+        [DataType(DataType.Password)]
+        [Compare(nameof(Password), ErrorMessage = "Password doesn't match")]
+        public string ConfirmPassword { get; set; } = null!;
+
+        [Display(Name = "I aggre to the Terms & Conditions", Order = 5)]
+        [Required(ErrorMessage = "You must accept the terms and conditions")]
+        public bool TermsAndCondition { get; set; } = false;
+    }
+
+    public class EmailModel
+    {
+        public string Email { get; set; } = null!;
+    }
+}

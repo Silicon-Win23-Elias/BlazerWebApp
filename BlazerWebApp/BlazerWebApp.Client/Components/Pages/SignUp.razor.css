@@ -1,0 +1,101 @@
+﻿.signup-section {
+  margin-top: 3.5rem;
+}
+@media (min-width: 992px) {
+  .signup-section {
+    margin-top: 7rem;
+  }
+}
+.signup-section .container {
+  display: flex;
+  justify-content: center;
+}
+.signup-section .container .signup-form ::deep .signin-link {
+  color: #6366F1;
+  font-weight: 600;
+}
+.signup-section .container .signup-form .m-text {
+  color: #565973;
+}
+.signup-section .container .signup-form .header1 {
+  font-weight: 700;
+}
+.signup-section .container .signup-form .already-exists-error {
+  color: #EF4444;
+  font-size: 14px;
+}
+.signup-section .container .signup-form .sign-in {
+  color: #6366F1;
+}
+.signup-section .container .signup-form form label {
+  font-weight: 600;
+  margin: 0;
+  display: inline;
+  color: #33354D;
+}
+.signup-section .container .signup-form form span {
+  margin-left: 0.5rem;
+  color: #EF4444;
+  font-size: 14px;
+}
+.signup-section .container .signup-form form .userinput {
+  margin-top: 0.2rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  border: 1px solid #D4D7E5;
+  height: 2.5rem;
+  width: 25vw;
+  min-width: 100%;
+  padding-left: 0.8rem;
+  padding-right: 0.8rem;
+  display: block;
+}
+.signup-section .container .signup-form form .userinput::placeholder {
+  color: #B4B7C9;
+}
+.signup-section .container .signup-form form .userinput.input-validation-error {
+  border: 1px solid #EF4444;
+  background-color: rgba(255, 0, 0, 0.05);
+}
+.signup-section .container .signup-form form .userinput.input-validation-error::placeholder {
+  color: #EF4444;
+}
+.signup-section .container .signup-form form .agreement-signup input {
+  accent-color: #6366F1;
+  margin-right: 0.5rem;
+}
+.signup-section .container .signup-form form .agreement-signup ::deep .signin-link {
+  color: #6366F1;
+  font-weight: 600;
+}
+.signup-section .container .signup-form form .agreement-signup p {
+  display: inline;
+  font-weight: 400;
+  color: #565973;
+}
+.signup-section .container .signup-form form .agreement-signup p a {
+  color: #6366F1;
+}
+.signup-section .container .signup-form form .agreement-signup span {
+  display: block;
+}
+.signup-section .container .signup-form form .agreement-signup button {
+  margin-top: 1.5rem;
+  margin-bottom: 4rem;
+  display: block;
+  width: 100%;
+  border: none;
+}
+.signup-section .container .signup-form form .nameinputs {
+  margin-top: 2rem;
+}
+@media (min-width: 1400px) {
+  .signup-section .container .signup-form form .nameinputs {
+    display: flex;
+    justify-content: space-between;
+  }
+  .signup-section .container .signup-form form .nameinputs input {
+    min-width: 30%;
+    width: 12vw;
+  }
+}

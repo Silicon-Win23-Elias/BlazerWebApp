@@ -1,0 +1,113 @@
+﻿@page "/Account/RegisterConfirmation"
+@rendermode InteractiveServer
+
+@using System.Text
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+@using BlazerWebApp.Data
+@using Microsoft.Azure.ServiceBus
+@using Newtonsoft.Json
+
+@inject UserManager<ApplicationUser> UserManager
+@inject IEmailSender<ApplicationUser> EmailSender
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Register confirmation</PageTitle>
+
+<div class="container">
+    <h1>Verify account</h1>
+
+    <p> @StatusMessage</p>
+
+    <EditForm FormName="ConfirmForm" Model="ConfirmForm" OnValidSubmit="OnValidSubmit" method="post" novalidate>
+        <DataAnnotationsValidator />
+
+        <label for="input-confirm-code">Confirm code</label>
+        <ValidationMessage For="@(() => ConfirmForm.Code)" />
+        <InputText @bind-Value="ConfirmForm.Code" type="text" id="input-confirm-password" class="userinput" placeholder="Confirm your password" />
+
+        <button type="submit" class="btn-theme">Verify code</button>
+
+    </EditForm>
+    <p>Didn't receive an email? <button @onclick="ResendCode">Resend code!</button></p>
+
+</div>
+
+
+
+
+@code {
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromQuery]
+    private string? Email { get; set; }
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    [SupplyParameterFromQuery]
+    private string? StatusMessage { get; set; }
+
+    [SupplyParameterFromForm]
+    public ConfirmFormModel ConfirmForm { get; set; } = new();
+
+
+    private string ServiceBusConnectionString = "Endpoint=sb://sb-silicon-hl.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=8q4LwR2nJFJtDW2ggc49CnbClwaD+yGBd+ASbGs0X38=";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Email is null)
+        {
+            RedirectManager.RedirectTo("");
+        }
+
+        var user = await UserManager.FindByEmailAsync(Email);
+        if (user is null)
+        {
+            HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+            StatusMessage = "Error finding user for unspecified email";
+        }
+    }
+
+    private async Task OnValidSubmit()
+    {
+        var result = await Http.PostAsJsonAsync("https://verificationprovider-silicon-hl.azurewebsites.net/api/validate?code=XeJPP7EcDM1weH1kDVqcrSuK0xNZtxEQx6gNwD8NSqjIAzFuLbSlcw==", new { Email = Email, Code = ConfirmForm.Code });
+
+        if (result.IsSuccessStatusCode)
+        {
+            var user = await UserManager.FindByEmailAsync(Email!);
+            user!.EmailConfirmed = true;
+            await UserManager.UpdateAsync(user);
+            RedirectManager.RedirectTo("account/login");
+        }
+        else
+        {
+            StatusMessage = "Invald code";
+        }
+    }
+
+    private async Task ResendCode()
+    {
+        try
+        {
+            var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new { Email = Email })));
+
+            var queueClient = new QueueClient(ServiceBusConnectionString, "verification_request");
+            await queueClient.SendAsync(message);
+
+            StatusMessage = "Code resent";
+        }
+        catch (Exception e)
+        {
+            StatusMessage = "Unable to resend code";
+            Console.WriteLine(e);
+        }
+    }
+
+    public class ConfirmFormModel
+    {
+        public string Code { get; set; } = null!;
+    }
+}

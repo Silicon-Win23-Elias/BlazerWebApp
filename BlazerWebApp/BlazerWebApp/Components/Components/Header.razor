@@ -1,0 +1,41 @@
+﻿<header>
+    <div class="container">
+        <NavLink id="logo" href="/" ><img id="logoImg" src="/images/silicon-logo-light_theme.svg" alt="silicon logo"></NavLink>
+        <button class="btn-mobile" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></button>
+        <div id="button" class="button">
+
+            <AuthorizeView>
+                <Authorized>
+                    <a href="/account/details"><img src="/images/profile_placeholder.jpg" alt=""></a>
+                </Authorized>
+            </AuthorizeView>
+
+        </div>
+        <AuthorizeView>
+            <NotAuthorized>
+                <div id="buttons" class="buttons">
+                    <NavLink class="btn-gray" href="/account/login"><i class="fa-regular fa-right-to-bracket"></i><p>Sign In</p></NavLink>
+                    <NavLink class="btn-theme" href="/signup"><i class="fa-regular fa-user"></i><p>Sign Up</p></NavLink>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+
+        <div id="menu">
+            <nav>
+                <NavLink class="menu-link" href="/">Overview</NavLink>
+                <NavLink class="menu-link" href="#features">Features</NavLink>
+                <AuthorizeView>
+                    <Authorized>
+                        <NavLink class="menu-link" href="/courses">Courses</NavLink>
+                    </Authorized>
+                </AuthorizeView>
+                <NavLink class="menu-link" href="/contact">Contact</NavLink>
+            </nav>
+        </div>
+
+    </div>
+</header>
+
+@code {
+
+}

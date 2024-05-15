@@ -1,0 +1,131 @@
+﻿
+
+<div class="details">
+    <h1>Account Details</h1>
+    <EditForm id="basicInfo" FormName="BasicInfo" Model="Profile" OnSubmit="SaveBasicInfo" method="post" novalidate class="basic-info">
+        <DataAnnotationsValidator />
+        <h4>Basic Info</h4>
+        @*<h5 class="message @((Model.ErrorMessage != "Success!") ? "error" : "success")">@Model.ErrorMessage</h5>
+        *@<div class="group">
+            <div class="label-input">
+                <label>First Name</label>
+                <ValidationMessage For="@(() => Profile.FirstName)" />
+                <InputText placeholder="Enter your first name" class="input" type="text" @bind-Value="Profile.FirstName" />
+            </div>
+            <div class="label-input">
+                <label>Last Name</label>
+                <ValidationMessage For="@(() => Profile.LastName)" />
+                <InputText placeholder="Enter your last name" class="input" type="text" @bind-Value="Profile.LastName" />
+            </div>
+        </div>
+        <div class="group">
+            <div class="label-input">
+                <label>Email</label>
+                <ValidationMessage For="@(() => Profile.Email)" />
+                <InputText placeholder="Enter your email" class="input" type="text" @bind-Value="Profile.Email" />
+            </div>
+            <div class="label-input">
+                <label>Phone (optional)</label>
+                <ValidationMessage For="@(() => Profile.Phone)" />
+                <InputText placeholder="Enter your phone" class="input" type="text" @bind-Value="Profile.Phone" />
+            </div>
+        </div>
+        <div>
+            <label>Bio (optional)</label>
+            <InputTextArea class="input" placeholder="Add a short bio..." @bind-Value="Profile.Bio"></InputTextArea>
+        </div>
+        <ValidationMessage For="@(() => Profile.Bio)" />
+        <div class="buttons">
+            <button class="btn-gray" type="reset">Cancel</button>
+            <button class="btn-theme" type="submit">Save changes</button>
+        </div>
+    </EditForm>
+
+    <form id="addressInfo" method="post" asp-controller="Profile" asp-action="AddressInfo" novalidate class="address">
+        <h4>Address</h4>
+        <div class="address-lines">
+            <div class="label-input">
+                <label>Address line 1</label>
+                @*<span asp-validation-for="@Model.AddresLine1"></span>
+                *@ <input class="input" type="text">
+            </div>
+            <div class="label-input">
+                <label>Address line 2 (optional)</label>
+                <input class="input" type="text">
+            </div>
+        </div>
+        <div class="group">
+            <div class="label-input">
+                <label>Postal code</label>
+                @*<span asp-validation-for="@Model.PostalCode"></span>
+                *@ <input class="input">
+            </div>
+            <div class="label-input">
+                <label>City</label>
+                @*<span asp-validation-for="@Model.City"></span>
+                *@ <input class="input" type="text">
+            </div>
+        </div>
+        <div class="buttons">
+            <button type="reset" class="btn-gray">Cancel</button>
+            <button type="submit" class="btn-theme">Save changes</button>
+        </div>
+    </form>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    public ProfileModel Profile { get; set; } = new();
+    
+    [Parameter]
+    public ApplicationUser User { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (User != null)
+        {
+            Profile.FirstName = User.FirstName;
+            Profile.LastName = User.LastName;
+            Profile.Email = User.Email!;
+            Profile.Phone = User.PhoneNumber;
+            Profile.Bio = User.Bio;
+        }
+    }
+
+    public async Task SaveBasicInfo()
+    {
+        var user = await UserManager.FindByEmailAsync(User.Email!);
+        user.FirstName = Profile.FirstName;
+        user.LastName = Profile.LastName;
+        user.Email = Profile.Email!;
+        user.PhoneNumber = Profile.Phone;
+        user.Bio = Profile.Bio;
+        await UserManager.UpdateAsync(user);
+        NavigationManager.NavigateTo(NavigationManager.Uri, true);
+    }
+
+    public class ProfileModel
+    {
+        [Display(Name = "First name", Prompt = "Enter your first name", Order = 0)]
+        [Required(ErrorMessage = "First name is required")]
+        public string FirstName { get; set; } = null!;
+
+        [Display(Name = "Last name", Prompt = "Enter your last name", Order = 1)]
+        [Required(ErrorMessage = "Last name is required")]
+        public string LastName { get; set; } = null!;
+
+        [DataType(DataType.EmailAddress)]
+        [Required(ErrorMessage = "Invalid email")]
+        [Display(Name = "Email address", Prompt = "Enter your email address", Order = 2)]
+        [RegularExpression("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", ErrorMessage = "Email address is required")]
+        public string Email { get; set; } = null!;
+
+        [DataType(DataType.PhoneNumber)]
+        [Display(Name = "Phone", Prompt = "Enter your phone", Order = 3)]
+        public string? Phone { get; set; }
+
+        [DataType(DataType.MultilineText)]
+        [Display(Name = "Bio", Prompt = "Add a short bio...", Order = 4)]
+        public string? Bio { get; set; }
+    }
+}

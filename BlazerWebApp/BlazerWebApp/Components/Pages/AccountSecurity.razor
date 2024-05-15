@@ -1,0 +1,14 @@
+﻿@page "/account/security"
+@rendermode InteractiveAuto
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+
+<section id="account">
+    <div class="container">
+        <AccountLeftSide />
+        <Security />
+    </div>
+</section>
+
+@code {
+
+}

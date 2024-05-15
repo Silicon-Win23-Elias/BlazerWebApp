@@ -1,0 +1,89 @@
+.single-course-section {
+    margin-top: 0.5rem;
+    position: relative;
+    font-family: 'Manrope', sans-serif;
+
+    .bkg-img {
+        object-fit: cover;
+        position: absolute;
+        width: 100%;
+        height: 600px;
+        display: none;
+
+        @media (min-width: 578px) {
+            display: block;
+            filter: grayscale(35%) brightness(50%);
+        }
+    }
+
+    .container {
+        padding-top: 2rem;
+        position: relative;
+        text-align: center;
+
+        @media (min-width: 578px) {
+            text-align: start;
+            margin-top: 4rem;
+        }
+
+
+        .course-info {
+            margin-top: 8rem;
+            text-align: center;
+
+            @media (min-width: 1024px) {
+                margin-top: 10rem;
+            }
+
+            @media (min-width: 1400px) {
+                margin-top: 13rem;
+                display: flex;
+                justify-content: space-between;
+                text-align: start;
+            }
+
+            .course-desc {
+                @media (min-width: 1400px) {
+                    max-width: 45rem;
+                }
+
+                p {
+                    color: #565973;
+                }
+
+                .display6 {
+                    margin-bottom: 2rem;
+                    font-weight: 700;
+                }
+
+                .what-youll-learn {
+                    margin-top: 3rem;
+
+                    .header3 {
+                        margin-bottom: 2rem;
+                        font-weight: 700;
+                    }
+
+                    i {
+                        margin-right: 0.5rem;
+                        color: #6366F1;
+                    }
+                }
+            }
+        }
+
+        .program-details {
+            margin-top: 5rem;
+            text-align: center;
+
+            h2 {
+                margin-bottom: 2rem;
+                font-weight: 700;
+            }
+
+            @media (min-width: 768px) {
+                text-align: start;
+            }
+        }
+    }
+}
