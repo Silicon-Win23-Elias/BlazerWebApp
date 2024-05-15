@@ -20,7 +20,7 @@
 </section>
 
 @code {
-    private ApplicationUser user;
+    private ApplicationUser user { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {

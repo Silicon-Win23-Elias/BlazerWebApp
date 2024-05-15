@@ -5,8 +5,7 @@
     <EditForm id="basicInfo" FormName="BasicInfo" Model="Profile" OnSubmit="SaveBasicInfo" method="post" novalidate class="basic-info">
         <DataAnnotationsValidator />
         <h4>Basic Info</h4>
-        @*<h5 class="message @((Model.ErrorMessage != "Success!") ? "error" : "success")">@Model.ErrorMessage</h5>
-        *@<div class="group">
+        <div class="group">
             <div class="label-input">
                 <label>First Name</label>
                 <ValidationMessage For="@(() => Profile.FirstName)" />
@@ -41,42 +40,45 @@
         </div>
     </EditForm>
 
-    <form id="addressInfo" method="post" asp-controller="Profile" asp-action="AddressInfo" novalidate class="address">
+    <EditForm FormName="AddressInfo" Model="Address" OnSubmit="SaveAddressInfo" id="addressInfo" method="post" novalidate class="address">
         <h4>Address</h4>
         <div class="address-lines">
             <div class="label-input">
                 <label>Address line 1</label>
-                @*<span asp-validation-for="@Model.AddresLine1"></span>
-                *@ <input class="input" type="text">
+                <ValidationMessage For="@(() => Address.AddresLine1)" />
+                <InputText @bind-Value="Address.AddresLine1" class="input" type="text"/>
             </div>
             <div class="label-input">
                 <label>Address line 2 (optional)</label>
-                <input class="input" type="text">
+                <InputText @bind-Value="Address.AddresLine2" class="input" type="text"/>
             </div>
         </div>
         <div class="group">
             <div class="label-input">
                 <label>Postal code</label>
-                @*<span asp-validation-for="@Model.PostalCode"></span>
-                *@ <input class="input">
+                <ValidationMessage For="@(() => Address.PostalCode)" />
+                <InputText @bind-Value="Address.PostalCode" class="input"/>
             </div>
             <div class="label-input">
                 <label>City</label>
-                @*<span asp-validation-for="@Model.City"></span>
-                *@ <input class="input" type="text">
+                <ValidationMessage For="@(() => Address.City)" />
+                <InputText @bind-Value="Address.City" class="input" type="text"/>
             </div>
         </div>
         <div class="buttons">
             <button type="reset" class="btn-gray">Cancel</button>
             <button type="submit" class="btn-theme">Save changes</button>
         </div>
-    </form>
+    </EditForm>
 </div>
 
 @code {
     [SupplyParameterFromForm]
     public ProfileModel Profile { get; set; } = new();
-    
+
+    [SupplyParameterFromForm]
+    public ProfileAddressModel Address { get; set; } = new();
+
     [Parameter]
     public ApplicationUser User { get; set; } = null!;
 
@@ -89,6 +91,16 @@
             Profile.Email = User.Email!;
             Profile.Phone = User.PhoneNumber;
             Profile.Bio = User.Bio;
+            
+            var address = Context.Adresses.FirstOrDefault(x => x.UserId == User.Id);
+
+            if (address != null)
+            {
+                Address.AddresLine1 = address.AddressLine1;
+                Address.AddresLine2 = address.AddressLine2;
+                Address.PostalCode = address.PostalCode;
+                Address.City = address.City;
+            }
         }
     }
 
@@ -102,6 +114,46 @@
         user.Bio = Profile.Bio;
         await UserManager.UpdateAsync(user);
         NavigationManager.NavigateTo(NavigationManager.Uri, true);
+    }
+
+    public async Task SaveAddressInfo()
+    {
+        try
+        {
+            var user = await UserManager.FindByEmailAsync(User.Email!);
+
+            if (user != null)
+            {
+                var address = Context.Adresses.FirstOrDefault(x => x.UserId == User.Id);
+
+                if (address != null)
+                {
+                    address.AddressLine1 = Address.AddresLine1;
+                    address.AddressLine2 = Address.AddresLine2;
+                    address.PostalCode = Address.PostalCode;
+                    address.City = Address.City;
+                    await Context.SaveChangesAsync();
+                }
+                else
+                {
+                    address = new AddressEntity
+                        {
+                            UserId = user.Id,
+                            AddressLine1 = Address.AddresLine1,
+                            AddressLine2 = Address.AddresLine2,
+                            PostalCode = Address.PostalCode,
+                            City = Address.City
+                        };
+
+                    Context.Add(address);
+                    await Context.SaveChangesAsync();
+                }
+            }
+
+            NavigationManager.NavigateTo(NavigationManager.Uri, true);
+
+        }
+        catch { }
     }
 
     public class ProfileModel
@@ -127,5 +179,24 @@
         [DataType(DataType.MultilineText)]
         [Display(Name = "Bio", Prompt = "Add a short bio...", Order = 4)]
         public string? Bio { get; set; }
+    }
+
+    public class ProfileAddressModel
+    {
+        [Display(Name = "Address line 1", Prompt = "Enter your address line", Order = 0)]
+        [Required(ErrorMessage = "Address line is required")]
+        public string AddresLine1 { get; set; } = null!;
+
+        [Display(Name = "Address line 2", Prompt = "Enter your second address line", Order = 1)]
+        public string? AddresLine2 { get; set; }
+
+        [Display(Name = "Postal code", Prompt = "Enter your postal code", Order = 2)]
+        [Required(ErrorMessage = "Postal code is required")]
+        [DataType(DataType.PostalCode)]
+        public string PostalCode { get; set; } = null!;
+
+        [Display(Name = "City", Prompt = "Enter your city", Order = 3)]
+        [Required(ErrorMessage = "City is required")]
+        public string City { get; set; } = null!;
     }
 }
