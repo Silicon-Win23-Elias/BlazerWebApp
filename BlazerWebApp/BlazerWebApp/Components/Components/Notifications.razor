@@ -1,46 +1,92 @@
 ﻿<div class="notifications">
     <h1>Notifications</h1>
-    <form id="notifications" method="post" novalidate class="basic-info">
-        @*<h5 class="message @((Model.ErrorMessage != "Success!") ? "error" : "success")">@Model.ErrorMessage</h5>
-        *@
+    <EditForm FormName="ContactEmailForm" Model="EmailForm" OnValidSubmit="OnSubmit" id="notifications" method="post" novalidate class="basic-info">
+        <h5 class="message @((ErrorMessage != "Success!") ? "error" : "success")">@ErrorMessage</h5>
+       
+        <DataAnnotationsValidator />
         <div class="label-input">
             <label>Preferred email for notifications</label>
-            @*<span asp-validation-for="@Model.FirstName"></span>
-            *@ <input placeholder="example@gmail.com" class="input" type="text">
+            <ValidationMessage For="@(() => EmailForm.Email)" />
+            <InputText @bind-Value="EmailForm.Email" placeholder="example@gmail.com" class="input" type="text" />
         </div>
-    </form>
 
-    <div class="btn-and-text">
-        <div id="switch-subscribe" class="btn-switch">
-            <label class="switch" for="switch-subscribe-mode">
-                <input type="checkbox" id="switch-subscribe-mode" />
-                <span class="slider round"></span>
-            </label>
+        <div class="btn-and-text">
+            <div id="switch-subscribe" class="btn-switch">
+                <label class="switch" for="switch-subscribe-mode">
+                    <InputCheckbox @bind-Value="EmailForm.Subscribed" type="checkbox" id="switch-subscribe-mode" />
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="text">
+                <h6>Subscribe to Newsletter</h6>
+                <p class="sub-text">Nec, posuere non felis duis massa vitae aliquet interdum scelerisque. Neque ullamcorper.</p>
+            </div>
         </div>
-        <div class="text">
-            <h6>Subscribe to Newsletter</h6>
-            <p class="sub-text">Nec, posuere non felis duis massa vitae aliquet interdum scelerisque. Neque ullamcorper.</p>
+        <div class="btn-and-text">
+            <div id="switch-darkmode" class="btn-switch">
+                <label class="switch" for="switch-darkmode-mode">
+                    <InputCheckbox @bind-Value="EmailForm.Darkmode" type="checkbox" id="switch-darkmode-mode" />
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="text">
+                <h6>Use Dark Mode Theme in Application</h6>
+                <p class="sub-text">Tortor massa porttitor enim tristique neque fermentum sed.</p>
+            </div>
         </div>
-    </div>
-    <div class="btn-and-text">
-        <div id="switch-darkmode" class="btn-switch">
-            <label class="switch" for="switch-darkmode-mode">
-                <input type="checkbox" id="switch-darkmode-mode" />
-                <span class="slider round"></span>
-            </label>
+        <div class="buttons">
+            <button type="reset" class="btn-gray">Cancel</button>
+            <button type="submit" class="btn-theme">Save changes</button>
         </div>
-        <div class="text">
-            <h6>Use Dark Mode Theme in Application</h6>
-            <p class="sub-text">Tortor massa porttitor enim tristique neque fermentum sed.</p>
-        </div>
-    </div>
-    <div class="buttons">
-        <button type="reset" class="btn-gray">Cancel</button>
-        <button type="submit" class="btn-theme">Save changes</button>
-    </div>
-    
+    </EditForm>    
 </div>
 
 @code {
+    [SupplyParameterFromForm]
+    public EmailModel EmailForm { get; set; } = new();
 
+    [Parameter]
+    public ApplicationUser User { get; set; } = null!;
+
+    public string ErrorMessage { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (User != null)
+        {
+            EmailForm.Email = User.ContactEmail;
+            EmailForm.Darkmode = User.DarkmodeActive;
+            EmailForm.Subscribed = User.IsSubscribed;
+        }
+    }
+
+    public async Task OnSubmit()
+    {
+        var user = await UserManager.FindByEmailAsync(User.Email!);
+        if (user != null)
+        {
+            user.ContactEmail = EmailForm.Email;
+            user.DarkmodeActive = EmailForm.Darkmode;
+            user.IsSubscribed = EmailForm.Subscribed;
+            await UserManager.UpdateAsync(user);
+            ErrorMessage = "Success!";
+        }
+        else
+        {
+            ErrorMessage = "Please provide a valid email";
+        }
+    }
+
+    public class EmailModel
+    {
+        [DataType(DataType.EmailAddress)]
+        [Required(ErrorMessage = "Invalid email")]
+        [Display(Name = "Email address", Prompt = "Enter your email address", Order = 2)]
+        [RegularExpression("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", ErrorMessage = "Email address is required")]
+        public string? Email { get; set; }
+
+        public bool Subscribed { get; set; } = false;
+
+        public bool Darkmode { get; set; } = false;
+    }
 }
