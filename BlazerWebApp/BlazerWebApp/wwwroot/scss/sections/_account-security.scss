@@ -36,10 +36,13 @@
     }
 
     .basic-info {
-        border-bottom: 1px solid #D4D7E5;
         display: flex;
         flex-direction: column;
         padding-bottom: 30px;
+
+        &.bottom-border {
+            border-bottom: 1px solid #D4D7E5;
+        }
 
         .current-password {
 

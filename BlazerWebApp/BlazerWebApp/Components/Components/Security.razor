@@ -1,4 +1,7 @@
-﻿<div class="security">
+﻿@using Microsoft.Azure.ServiceBus
+@using System.Text
+@using Newtonsoft.Json
+<div class="security">
     <h1>Security</h1>
     <EditForm FormName="PasswordForm" Model="passwordModel" OnValidSubmit="SavePassword" method="post" novalidate class="basic-info">
         <DataAnnotationsValidator />
@@ -31,7 +34,20 @@
         </div>
         <div class="buttons">
             <button type="reset" class="btn-gray">Cancel</button>
-            <button type="submit" class="btn-theme">Change password</button>
+            <button type="submit" class="btn-theme">Send Confirmation Code</button>
+        </div>
+    </EditForm>
+
+    <EditForm FormName="ConfirmForm" Model="confirmModel" OnValidSubmit="SubmitConfirmationCode" class="basic-info bottom-border">
+        <div class="label-input">
+            <div class="label-span">
+                <label>Confirm code to change password</label>
+            </div>
+            <InputText @bind-Value="confirmModel.ConfirmationCode" type="text" placeholder="Provide confirmation code here" class="input current-password" />
+        </div>
+
+        <div class="buttons">
+            <button type="submit" class="btn-theme">Confirm code</button>
         </div>
     </EditForm>
 
@@ -67,11 +83,16 @@
     public PasswordModel passwordModel { get; set; } = new();
 
     [SupplyParameterFromForm]
+    public ConfirmCodeModel confirmModel { get; set; } = new();
+
+    [SupplyParameterFromForm]
     public DeleteModel deleteModel { get; set; } = new();
 
     public string StatusMessage { get; set; } = "";
     public string StatusClass { get; set; } = "";
     public bool submitted;
+
+    private string ServiceBusConnectionString = "Endpoint=sb://sb-silicon-hl.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=8q4LwR2nJFJtDW2ggc49CnbClwaD+yGBd+ASbGs0X38=";
 
     public class PasswordModel
     {
@@ -98,6 +119,11 @@
         public bool DeleteConfirm { get; set; } = false;
     }
 
+    public class ConfirmCodeModel
+    {
+        public string ConfirmationCode { get; set; } = null!;
+    }
+
     public async Task SavePassword()
     {
         var user = await UserManager.FindByIdAsync(User.Id);
@@ -107,16 +133,19 @@
 
             if (correctCurrentPassword)
             {
-                var result = await UserManager.ChangePasswordAsync(user!, passwordModel.CurrentPassword, passwordModel.NewPassword);
-                if (result.Succeeded)
+                try
                 {
-                    StatusMessage = "Password was updated!";
+                    var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new { Email = User.Email })));
+
+                    var queueClient = new QueueClient(ServiceBusConnectionString, "verification_request");
+                    await queueClient.SendAsync(message);
+
+                    StatusMessage = "A confirmationcode has been sent to your email";
                     StatusClass = "Success";
                 }
-                else
+                catch (Exception e)
                 {
-                    StatusMessage = "Something went wrong.";
-                    StatusClass = "Error";
+                    Console.WriteLine(e);
                 }
             }
             else
@@ -124,6 +153,33 @@
                 StatusMessage = "Wrong current password";
                 StatusClass = "Error";
             }
+        }
+    }
+
+    public async Task SubmitConfirmationCode()
+    {
+        var result = await Http.PostAsJsonAsync("https://verificationprovider-silicon-hl.azurewebsites.net/api/validate?code=XeJPP7EcDM1weH1kDVqcrSuK0xNZtxEQx6gNwD8NSqjIAzFuLbSlcw==", new { Email = User.Email, Code = confirmModel.ConfirmationCode });
+
+        if (result.IsSuccessStatusCode)
+        {
+            var user = await UserManager.FindByEmailAsync(User.Email!);
+            await UserManager.UpdateAsync(user);
+            
+            var changePasswordResult = await UserManager.ChangePasswordAsync(user!, passwordModel.CurrentPassword, passwordModel.NewPassword);
+            if (changePasswordResult.Succeeded)
+            {
+                StatusMessage = "Password was updated!";
+                StatusClass = "Success";
+            }
+            else
+            {
+                StatusMessage = "Something went wrong.";
+                StatusClass = "Error";
+            }
+        }
+        else
+        {
+            StatusMessage = "Invald code";
         }
     }
 
