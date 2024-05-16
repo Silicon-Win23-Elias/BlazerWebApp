@@ -1,4 +1,6 @@
-﻿<div class="security">
+﻿@inject IJSRuntime JSRuntime
+
+<div class="security">
     <h1>Security</h1>
     <EditForm FormName="PasswordForm" Model="passwordModel" OnValidSubmit="SavePassword" method="post" novalidate class="basic-info">
         <DataAnnotationsValidator />
@@ -35,9 +37,10 @@
         </div>
     </EditForm>
 
-    <EditForm FormName="DeleteForm" Model="deleteModel" OnValidSubmit="DeleteUser" method="post" novalidate class="delete-account">
+    <EditForm FormName="DeleteForm" Model="deleteModel" OnValidSubmit="Submit" method="post" novalidate class="delete-account">
         <h4>Delete account</h4>
         <p>When you delete your account, your public profile will be deactivated immediately. If you change your mind before the 14 days are up, sign in with your email and password, and we’ll send you a link to reactivate your account.</p>
+        <input type="hidden" name="ReturnUrl" value="" />
         <div class="checkbox">
             <InputCheckbox @bind-Value="deleteModel.DeleteConfirm" />
             <ValidationMessage For="@(() => deleteModel.DeleteConfirm)" />
@@ -45,6 +48,17 @@
         </div>
         <button type="submit" class="btn-red">Delete</button>
     </EditForm>
+
+    @if (submitted)
+    {
+        <form action="Account/Logout" method="post">
+            <AntiforgeryToken />
+            <p class="message error">Confirm you want to delete your account</p>
+            <input type="hidden" name="ReturnUrl" value="" />
+            <button type="submit" @onclick="DeleteUser" class="btn-red">Confirm</button>
+        </form>
+    }
+    
 </div>
 
 @code {
@@ -59,6 +73,7 @@
 
     public string StatusMessage { get; set; } = "";
     public string StatusClass { get; set; } = "";
+    public bool submitted;
 
     public class PasswordModel
     {
@@ -114,17 +129,25 @@
         }
     }
 
+    public void Submit()
+    {
+            if (deleteModel.DeleteConfirm)
+            {        
+                submitted = true;
+            }
+            else
+            {
+                StatusMessage = "Checkbox required to delete account.";
+                StatusClass = "Error";
+            }
+    }
+
     public async Task DeleteUser()
     {
         var user = await UserManager.FindByIdAsync(User.Id);
-        if (user != null && deleteModel.DeleteConfirm)
+        if (user != null)
         {
             await UserManager.DeleteAsync(user);
-        }
-        else
-        {
-            StatusMessage = "Checkbox required to delete account.";
-            StatusClass = "Error";
         }
     }
 }
