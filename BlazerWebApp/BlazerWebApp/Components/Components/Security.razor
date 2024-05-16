@@ -1,52 +1,130 @@
-﻿@rendermode InteractiveAuto
-
-<div class="security">
+﻿<div class="security">
     <h1>Security</h1>
-    <form method="post" asp-controller="Profile" asp-action="ChangePassword" novalidate class="basic-info">
+    <EditForm FormName="PasswordForm" Model="passwordModel" OnValidSubmit="SavePassword" method="post" novalidate class="basic-info">
+        <DataAnnotationsValidator />
         <h4>Password</h4>
-@*         <h5 class="message @((Model.ErrorMessage != "Success!") ? "error" : "success")">@Model.ErrorMessage</h5>
- *@        <div class="current-password">
+        <p class="message @((@StatusClass != "Success") ? "error" : "success")">@StatusMessage</p>
+        <div class="current-password">
             <div class="label-input">
                 <div class="label-span">
-                    <label>Current password</label>
-@*                     <span asp-validation-for="CurrentPassword"></span>
- *@                </div>
-                <input class="input">
+                    <label for="">Current password</label>
+                    <ValidationMessage For="@(() => passwordModel.CurrentPassword)" />
+             </div>
+                <InputText @bind-Value="passwordModel.CurrentPassword" type="password" placeholder="********" class="input" />
             </div>
         </div>
         <div class="group">
             <div class="label-input">
                 <div class="label-span">
                     <label>New password</label>
-@*                     <span asp-validation-for="NewPassword"></span>
- *@                </div>
-                <input class="input">
+                    <ValidationMessage For="@(() => passwordModel.NewPassword)" />
+                </div>
+                <InputText @bind-Value="passwordModel.NewPassword" type="password" placeholder="********" class="input" />
             </div>
             <div class="label-input">
                 <div class="label-span">
                     <label> Confirm password</label>
-@*                     <span asp-validation-for="ConfirmPassword"></span>
- *@                </div>
-                <input class="input">
+                    <ValidationMessage For="@(() => passwordModel.ConfirmPassword)" />
+                </div>
+                <InputText @bind-Value="passwordModel.ConfirmPassword" type="password" placeholder="********" class="input" />
             </div>
         </div>
         <div class="buttons">
             <button type="reset" class="btn-gray">Cancel</button>
             <button type="submit" class="btn-theme">Change password</button>
         </div>
-    </form>
-    <form method="post" novalidate asp-controller="Profile" asp-action="DeleteAccount" class="delete-account">
+    </EditForm>
+
+    <EditForm FormName="DeleteForm" Model="deleteModel" OnValidSubmit="DeleteUser" method="post" novalidate class="delete-account">
         <h4>Delete account</h4>
         <p>When you delete your account, your public profile will be deactivated immediately. If you change your mind before the 14 days are up, sign in with your email and password, and we’ll send you a link to reactivate your account.</p>
         <div class="checkbox">
-            <input asp-for="DeleteModel!.Delete" type="checkbox">
-            <span asp-validation-for="DeleteModel!.Delete"></span>
+            <InputCheckbox @bind-Value="deleteModel.DeleteConfirm" />
+            <ValidationMessage For="@(() => deleteModel.DeleteConfirm)" />
             <p>Yes, I want to delete my account.</p>
         </div>
         <button type="submit" class="btn-red">Delete</button>
-    </form>
+    </EditForm>
 </div>
 
 @code {
+    [Parameter]
+    public ApplicationUser User { get; set; } = null!;
 
+    [SupplyParameterFromForm]
+    public PasswordModel passwordModel { get; set; } = new();
+
+    [SupplyParameterFromForm]
+    public DeleteModel deleteModel { get; set; } = new();
+
+    public string StatusMessage { get; set; } = "";
+    public string StatusClass { get; set; } = "";
+
+    public class PasswordModel
+    {
+        [Display(Name = "Current Password", Prompt = "Enter current password", Order = 0)]
+        [Required(ErrorMessage = "Current password is required")]
+        public string CurrentPassword { get; set; } = null!;
+
+        [Display(Name = "New Password", Prompt = "Enter new password", Order = 1)]
+        [Required(ErrorMessage = "Invalid Password")]
+        [DataType(DataType.Password)]
+        [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()\\-_=+{};:,<.>]).{8,}$", ErrorMessage = "Invalid password")]
+        public string NewPassword { get; set; } = null!;
+
+        [Display(Name = "Confirm password", Prompt = "Confirm your password", Order = 4)]
+        [Required(ErrorMessage = "Password doesn't match")]
+        [DataType(DataType.Password)]
+        [Compare(nameof(NewPassword), ErrorMessage = "Password doesn't match")]
+        public string ConfirmPassword { get; set; } = null!;
+    }
+
+    public class DeleteModel
+    {
+        [Required(ErrorMessage = "Confirmation required")]
+        public bool DeleteConfirm { get; set; } = false;
+    }
+
+    public async Task SavePassword()
+    {
+        var user = await UserManager.FindByIdAsync(User.Id);
+        if (user != null)
+        {
+            var correctCurrentPassword = await UserManager.CheckPasswordAsync(user, passwordModel.CurrentPassword);
+
+            if (correctCurrentPassword)
+            {
+                var result = await UserManager.ChangePasswordAsync(user!, passwordModel.CurrentPassword, passwordModel.NewPassword);
+                if (result.Succeeded)
+                {
+                    StatusMessage = "Password was updated!";
+                    StatusClass = "Success";
+                }
+                else
+                {
+                    StatusMessage = "Something went wrong.";
+                    StatusClass = "Error";
+                }
+            }
+            else
+            {
+                StatusMessage = "Wrong current password";
+                StatusClass = "Error";
+            }
+        }
+    }
+
+    public async Task DeleteUser()
+    {
+        var user = await UserManager.FindByIdAsync(User.Id);
+        if (user != null && deleteModel.DeleteConfirm)
+        {
+            await UserManager.DeleteAsync(user);
+        }
+        else
+        {
+            StatusMessage = "Checkbox required to delete account.";
+            StatusClass = "Error";
+        }
+    }
 }
