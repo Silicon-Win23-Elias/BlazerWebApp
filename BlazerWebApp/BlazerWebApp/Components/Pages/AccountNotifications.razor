@@ -3,12 +3,30 @@
 @attribute [Microsoft.AspNetCore.Authorization.Authorize]
 
 <section id="account">
-    <div class="container">
-        <AccountLeftSide />
-        <Notifications />
-    </div>
+    
+
+    @if (user != null)
+    {
+        <div class="container">
+            <AccountLeftSide User="user" />
+            <Notifications User="user"/>
+        </div>
+    }
+    else
+    {
+        <p>Loading user data...</p>
+    }
 </section>
 
 @code {
+    private ApplicationUser user { get; set; } = null!;
 
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userClaims = authenticationState.User;
+
+        user = await UserManager.GetUserAsync(userClaims);
+        return;
+    }
 }
