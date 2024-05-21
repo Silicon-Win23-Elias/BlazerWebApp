@@ -1,129 +1,169 @@
-﻿<div class="saved-items">
+﻿@using Newtonsoft.Json
+<div class="saved-items">
     <div class="title-btn">
         <h1>Saved Items</h1>
-        <a asp-controller="Profile" asp-action="RemoveAllCourses" class="btn-delete"><i class="fa-solid fa-trash"></i> Delete all</a>
+        <button @onclick="DeleteAllCourses" class="btn-delete"><i class="fa-solid fa-trash"></i> Delete all</button>
     </div>
     <div class="courses">
 
-        <div class="oneCourse">
-            <div class="btn-tooltip">
-                <form method="post">
-                    <input type="hidden" name="courseId" value="" />
-                    <i class="saveCourseBtn fa-sharp fa-regular fa-circle-bookmark"></i>
-                    <p class="tool-tip">Save</p>
-                </form>
-            </div>
-            <p class="bestSeller">Best seller</p>
-            <a asp-controller="Courses" asp-action="SingleCourse" class="oneCourseLink">
-                <img src="images/course1.svg" alt="Image from the course">
-                <div class="course-info">
-                    <h5 class="header5">Fullstack Web Developer Course from Scratch</h5>
-                    <p class="author">By Robert Fox</p>
-                    <div class="prices">
-                        <p class="price color-danger">$123</p>
-                        <p class="reducedPrice">$92</p>
-                        @* <p class="price">$32</p> *@
-                    </div>
-                    <div class="hours-and-rating">
-                        <i class="fa-regular fa-clock" style="color: #9397AD;"></i>
-                        <p class="hours text-s">196 hours</p>
-                        <i class="fa-regular fa-thumbs-up" style="color: #9397AD;"></i>
-                        <p class="rating text-s">53% (372)</p>
-                    </div>
+        @foreach (CourseCardModel course in CourseList)
+        {
+            <div class="oneCourse">
+                <div class="btn-tooltip">
+                    <EditForm FormName="@course.Id" Model="courseIdModel" OnValidSubmit="(() => RemoveCourse(course.Id))" method="post">
+                        <InputText @bind-Value="courseIdModel.CourseId" hidden class="tool-tip">Save</InputText>
+                        <button class="saveCourseBtn @(SavedCourses.Contains(course.Id) ? "saved" : "")"> <i class=" fa-sharp fa-regular fa-circle-bookmark"></i></button>
+                    </EditForm>
                 </div>
-            </a>
-        </div>  
-        
-        <div class="oneCourse">
-            <div class="btn-tooltip">
-                <form method="post">
-                    <input type="hidden" name="courseId" value="" />
-                    <i class="saveCourseBtn fa-sharp fa-regular fa-circle-bookmark"></i>
-                    <p class="tool-tip">Save</p>
-                </form>
-            </div>
-            <p class="bestSeller">Best seller</p>
-            <a asp-controller="Courses" asp-action="SingleCourse" class="oneCourseLink">
-                <img src="images/course1.svg" alt="Image from the course">
-                <div class="course-info">
-                    <h5 class="header5">Fullstack Web Developer Course from Scratch</h5>
-                    <p class="author">By Robert Fox</p>
-                    <div class="prices">
-                        <p class="price color-danger">$123</p>
-                        <p class="reducedPrice">$92</p>
-                        @* <p class="price">$32</p> *@
-                    </div>
-                    <div class="hours-and-rating">
-                        <i class="fa-regular fa-clock" style="color: #9397AD;"></i>
-                        <p class="hours text-s">196 hours</p>
-                        <i class="fa-regular fa-thumbs-up" style="color: #9397AD;"></i>
-                        <p class="rating text-s">53% (372)</p>
-                    </div>
-                </div>
-            </a>
-        </div>
 
-        <div class="oneCourse">
-            <div class="btn-tooltip">
-                <form method="post">
-                    <input type="hidden" name="courseId" value="" />
-                    <i class="saveCourseBtn fa-sharp fa-regular fa-circle-bookmark"></i>
-                    <p class="tool-tip">Save</p>
-                </form>
-            </div>
-            <p class="bestSeller">Best seller</p>
-            <a asp-controller="Courses" asp-action="SingleCourse" class="oneCourseLink">
-                <img src="images/course1.svg" alt="Image from the course">
-                <div class="course-info">
-                    <h5 class="header5">Fullstack Web Developer Course from Scratch</h5>
-                    <p class="author">By Robert Fox</p>
-                    <div class="prices">
-                        <p class="price color-danger">$123</p>
-                        <p class="reducedPrice">$92</p>
-                        @* <p class="price">$32</p> *@
-                    </div>
-                    <div class="hours-and-rating">
-                        <i class="fa-regular fa-clock" style="color: #9397AD;"></i>
-                        <p class="hours text-s">196 hours</p>
-                        <i class="fa-regular fa-thumbs-up" style="color: #9397AD;"></i>
-                        <p class="rating text-s">53% (372)</p>
-                    </div>
-                </div>
-            </a>
-        </div>
+                @if (course.IsBestSeller)
+                {
+                    <p class="bestSeller">Best seller</p>
+                }
 
-        <div class="oneCourse">
-            <div class="btn-tooltip">
-                <form method="post">
-                    <input type="hidden" name="courseId" value="" />
-                    <i class="saveCourseBtn fa-sharp fa-regular fa-circle-bookmark"></i>
-                    <p class="tool-tip">Save</p>
-                </form>
+                <a class="oneCourseLink">
+                    <img src="@course.ImageUri" alt="Image from the course">
+                    <div class="course-info">
+                        <h5 class="header5">@course.Title</h5>
+                        <p class="author">By Robert Fox</p>
+                        <div class="prices">
+
+                            @if (course.Prices!.Discount == 0)
+                            {
+                                <p class="price">@course.Prices.Currency@course.Prices.Price</p>
+                            }
+                            else
+                            {
+                                <p class="price color-danger">@course.Prices.Currency@course.Prices.Discount</p>
+                                <p class="reducedPrice">@course.Prices.Currency@course.Prices.Price</p>
+                            }
+
+                        </div>
+                        <div class="hours-and-rating">
+                            <i class="fa-regular fa-clock" style="color: #9397AD;"></i>
+                            <p class="hours text-s">@course.Duration hours</p>
+                            <i class="fa-regular fa-thumbs-up" style="color: #9397AD;"></i>
+                            <p class="rating text-s">@course.LikesPercent (@course.Likes)</p>
+                        </div>
+                    </div>
+                </a>
             </div>
-            <p class="bestSeller">Best seller</p>
-            <a asp-controller="Courses" asp-action="SingleCourse" class="oneCourseLink">
-                <img src="images/course1.svg" alt="Image from the course">
-                <div class="course-info">
-                    <h5 class="header5">Fullstack Web Developer Course from Scratch</h5>
-                    <p class="author">By Robert Fox</p>
-                    <div class="prices">
-                        <p class="price color-danger">$123</p>
-                        <p class="reducedPrice">$92</p>
-                        @* <p class="price">$32</p> *@
-                    </div>
-                    <div class="hours-and-rating">
-                        <i class="fa-regular fa-clock" style="color: #9397AD;"></i>
-                        <p class="hours text-s">196 hours</p>
-                        <i class="fa-regular fa-thumbs-up" style="color: #9397AD;"></i>
-                        <p class="rating text-s">53% (372)</p>
-                    </div>
-                </div>
-            </a>
-        </div>
+        }
 
     </div>
 </div>
 
 @code {
+    [Parameter]
+    public ApplicationUser User { get; set; } = null!;
 
+    public List<CourseCardModel> CourseList = [];
+    public List<string> SavedCourses = [];
+    public SaveCourseModel courseIdModel = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (User != null)
+        {
+            var courseList = Context.UserCourses.Where(x => x.UserId == User.Id).ToList();
+
+            foreach (var course in courseList)
+            {
+                var query = new GraphQLQuery { Query = $"query {{ getCourseById(id: \"{course.CourseId}\") {{ id title imageUri isBestSeller likesPercent likes duration authors {{ name }} prices {{ currency price discount }} }} }}" };
+                var response = await Http.PostAsJsonAsync("https://courseprovider-silicon-hl.azurewebsites.net/api/graphql?code=7HxNcs9s7LTbK8xSkGVLN9W6v5XDgOJCcj_D31kwYSgGAzFu9L-qMg%3D%3D", query);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonString = await response.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<RootObject>(jsonString);
+
+                    CourseList.Add(result.Data.GetCourseById);
+                }
+            }
+
+            var userCourses = Context.UserCourses.Where(x => x.UserId == User.Id).ToList();
+
+            foreach (var course in userCourses)
+            {
+                SavedCourses.Add(course.CourseId);
+            }
+        }
+    }
+
+    private async Task RemoveCourse(string courseId)
+    {
+        if (User != null)
+        {
+            var result = Context.UserCourses.FirstOrDefault(x => x.UserId == User.Id && x.CourseId == courseId);
+
+            if (result != null)
+            {
+                Context.Remove(result);
+                await Context.SaveChangesAsync();
+                SavedCourses.Remove(courseId);
+                NavigationManager.NavigateTo(NavigationManager.Uri, true);
+            }
+        }
+    }
+
+    private async Task DeleteAllCourses()
+    {
+        foreach (var course in SavedCourses)
+        {
+            var result = Context.UserCourses.FirstOrDefault(x => x.CourseId == course);
+
+            if (result != null)
+            {
+                Context.Remove(result);
+                await Context.SaveChangesAsync();
+                NavigationManager.NavigateTo(NavigationManager.Uri, true);
+            }
+        }
+    }
+
+    public class GraphQLQuery
+    {
+        public string Query { get; set; } = null!;
+    }
+
+    public class AuthorModel
+    {
+        public string? Name { get; set; }
+    }
+
+    public class PriceModel
+    {
+        public decimal Price { get; set; }
+        public string? Currency { get; set; }
+        public decimal Discount { get; set; }
+    }
+
+    public class CourseCardModel
+    {
+        public string Id { get; set; } = null!;
+        public string ImageUri { get; set; } = null!;
+        public bool IsBestSeller { get; set; }
+        public string? Title { get; set; }
+        public List<AuthorModel>? Authors { get; set; }
+        public PriceModel? Prices { get; set; }
+        public string? Duration { get; set; }
+        public string? LikesPercent { get; set; }
+        public string? Likes { get; set; }
+    }
+
+    public class GetCoursesResponse
+    {
+        public CourseCardModel GetCourseById { get; set; } = null!;
+    }
+
+    public class RootObject
+    {
+        public GetCoursesResponse Data { get; set; } = null!;
+    }
+
+    public class SaveCourseModel
+    {
+        public String CourseId { get; set; } = null!;
+    }
 }

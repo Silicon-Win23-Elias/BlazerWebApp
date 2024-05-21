@@ -4,11 +4,27 @@
 
 <section id="account">
     <div class="container">
-        <AccountLeftSide />
-        <SavedItems />
+        
+        @if (user != null)
+        {
+            <AccountLeftSide User="user" />
+            <SavedItems User="user" />
+        }
+        else
+        {
+            <p>Loading user data...</p>
+        }
     </div>
 </section>
 
 @code {
+    private ApplicationUser user { get; set; } = null!;
 
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userClaims = authenticationState.User;
+
+        user = await UserManager.GetUserAsync(userClaims);
+    }
 }

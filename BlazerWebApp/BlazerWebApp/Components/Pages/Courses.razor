@@ -1,4 +1,5 @@
 ﻿@page "/Courses"
+@rendermode InteractiveServer
 @using Newtonsoft.Json
 
 <section class="courses-section">
@@ -15,26 +16,24 @@
             <i class="fa-regular fa-magnifying-glass" style="color: #33354D;"></i>
         </div>
         <div class="courses-all">
-            
+
             @foreach (CourseCardModel course in courseList)
             {
                 <div class="oneCourse">
                     <div class="btn-tooltip">
-                        <form method="post">
-                            <AntiforgeryToken/>
-                            <input type="hidden" name="@course.Id" value="" />
-                            <p class="tool-tip">Save</p>
-                            <button class="saveCourseBtn"> <i class=" fa-sharp fa-regular fa-circle-bookmark"></i></button>
-                        </form>
+                        <EditForm FormName="@course.Id" Model="courseIdModel" OnValidSubmit="(() => SaveCourseToUser(course.Id))" method="post">
+                            <InputText @bind-Value="courseIdModel.CourseId" hidden class="tool-tip">Save</InputText>
+                            <button class="saveCourseBtn @(SavedCourses.Contains(course.Id) ? "saved" : "")"> <i class=" fa-sharp fa-regular fa-circle-bookmark"></i></button>
+                        </EditForm>
                     </div>
 
-                    @if(course.IsBestSeller)
+                    @if (course.IsBestSeller)
                     {
                         <p class="bestSeller">Best seller</p>
                     }
 
                     <a class="oneCourseLink">
-                        <img src="images/course1.svg" alt="Image from the course">
+                        <img src="@course.ImageUri" alt="Image from the course">
                         <div class="course-info">
                             <h5 class="header5">@course.Title</h5>
                             <p class="author">By Robert Fox</p>
@@ -49,7 +48,7 @@
                                     <p class="price color-danger">@course.Prices.Currency@course.Prices.Discount</p>
                                     <p class="reducedPrice">@course.Prices.Currency@course.Prices.Price</p>
                                 }
-                                
+
                             </div>
                             <div class="hours-and-rating">
                                 <i class="fa-regular fa-clock" style="color: #9397AD;"></i>
@@ -61,8 +60,8 @@
                     </a>
                 </div>
             }
-            
-        </div>   
+
+        </div>
     </div>
     <div class="page-numbers">
         <a asp-action="Index" asp-controller="Courses" asp-route-pageNumber="" class="arrow">&lt;</a>
@@ -74,11 +73,14 @@
 
 @code {
     public CourseCardModel courseCardModel = new();
+    public SaveCourseModel courseIdModel = new();
     public List<CourseCardModel> courseList { get; set; } = [];
+    public ApplicationUser User = new();
+    public List<string> SavedCourses = [];
 
     protected override async Task OnInitializedAsync()
     {
-        var query = new GraphQLQuery { Query = "query { getCourses { id isBestSeller title authors {name} prices {price currency discount} duration likesPercent likes } }" };
+        var query = new GraphQLQuery { Query = "query { getCourses { id isBestSeller imageUri title authors {name} prices {price currency discount} duration likesPercent likes } }" };
         var response = await Http.PostAsJsonAsync("https://courseprovider-silicon-hl.azurewebsites.net/api/graphql?code=7HxNcs9s7LTbK8xSkGVLN9W6v5XDgOJCcj_D31kwYSgGAzFu9L-qMg%3D%3D", query);
 
         if (response.IsSuccessStatusCode)
@@ -91,11 +93,62 @@
                 courseList.Add(course);
             }
         }
+
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userClaims = authenticationState.User;
+
+        User = await UserManager.GetUserAsync(userClaims);
+
+        var userCourses =  Context.UserCourses.Where(x => x.UserId == User.Id).ToList();
+
+        foreach (var course in userCourses)
+        {
+            SavedCourses.Add(course.CourseId);
+        }
     }
 
-    private async Task SaveCourse()
+    private async Task SaveCourseToUser(string courseId)
     {
-        
+        if (User != null)
+        {
+            var result = Context.UserCourses.FirstOrDefault(x => x.UserId == User.Id && x.CourseId == courseId);
+
+            if (result == null)
+            {
+                var userCourse = new UserCourses
+                    {
+                        UserId = User.Id,
+                        CourseId = courseId
+                    };
+
+                Context.Add(userCourse);
+                await Context.SaveChangesAsync();
+                SavedCourses.Add(courseId);
+            }
+            else
+            {
+                Context.Remove(result);
+                await Context.SaveChangesAsync();
+                SavedCourses.Remove(courseId);
+            }
+        }
+    }
+
+    private bool CheckIfCourseIsSaved(string courseId)
+    {
+        var userCourse = new UserCourses
+            {
+                UserId = User.Id,
+                CourseId = courseId
+            };
+        var result = Context.UserCourses.FirstOrDefault(x => x.UserId == User.Id && x.CourseId == courseId);
+
+        if (result == null)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public class GraphQLQuery
@@ -118,6 +171,7 @@
     public class CourseCardModel
     {
         public string Id { get; set; } = null!;
+        public string ImageUri { get; set; } = null!;
         public bool IsBestSeller { get; set; }
         public string? Title { get; set; }
         public List<AuthorModel>? Authors { get; set; }
@@ -135,5 +189,10 @@
     public class RootObject
     {
         public GetCoursesResponse Data { get; set; } = null!;
+    }
+
+    public class SaveCourseModel
+    {
+        public String CourseId { get; set; } = null!;
     }
 }

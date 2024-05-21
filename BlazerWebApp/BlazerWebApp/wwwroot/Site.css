@@ -570,6 +570,10 @@ a:hover {
   box-shadow: 1px 1px 6px 3px #B4B7C9;
   cursor: pointer;
 }
+.courses-section .container .courses-all .oneCourse button {
+  background: none;
+  border: none;
+}
 .courses-section .container .courses-all .oneCourse .bestSeller {
   background-color: #22C55E;
   color: #ffffff;
@@ -590,6 +594,9 @@ a:hover {
 }
 .courses-section .container .courses-all .oneCourse .btn-tooltip .saveCourseBtn:hover {
   color: #6366F1;
+}
+.courses-section .container .courses-all .oneCourse .btn-tooltip .saveCourseBtn.saved {
+  color: forestgreen;
 }
 .courses-section .container .courses-all .oneCourse .btn-tooltip .removeCourseBtn {
   position: absolute;
@@ -1477,6 +1484,10 @@ header .container .btn-mobile {
   box-shadow: 1px 1px 6px 3px #B4B7C9;
   cursor: pointer;
 }
+.saved-items .courses .oneCourse button {
+  background: none;
+  border: none;
+}
 .saved-items .courses .oneCourse .bestSeller {
   background-color: #22C55E;
   color: #ffffff;
@@ -1497,6 +1508,9 @@ header .container .btn-mobile {
 }
 .saved-items .courses .oneCourse .btn-tooltip .saveCourseBtn:hover {
   color: #6366F1;
+}
+.saved-items .courses .oneCourse .btn-tooltip .saveCourseBtn.saved {
+  color: forestgreen;
 }
 .saved-items .courses .oneCourse .btn-tooltip .removeCourseBtn {
   position: absolute;
