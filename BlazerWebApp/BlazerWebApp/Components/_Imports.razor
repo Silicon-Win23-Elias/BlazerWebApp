@@ -9,6 +9,7 @@
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using Microsoft.JSInterop
 @using BlazerWebApp
+@using BlazerWebApp.Services
 @using BlazerWebApp.Data
 @using BlazerWebApp.Client
 @using BlazerWebApp.Components
@@ -31,3 +32,4 @@
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject ProfileImageService ProfileImageService
