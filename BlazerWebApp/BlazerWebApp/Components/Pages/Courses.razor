@@ -21,9 +21,10 @@
                 <div class="oneCourse">
                     <div class="btn-tooltip">
                         <form method="post">
-                            <input type="hidden" name="courseId" value="" />
-                            <i class="saveCourseBtn fa-sharp fa-regular fa-circle-bookmark"></i>
+                            <AntiforgeryToken/>
+                            <input type="hidden" name="@course.Id" value="" />
                             <p class="tool-tip">Save</p>
+                            <button class="saveCourseBtn"> <i class=" fa-sharp fa-regular fa-circle-bookmark"></i></button>
                         </form>
                     </div>
 
@@ -90,6 +91,11 @@
                 courseList.Add(course);
             }
         }
+    }
+
+    private async Task SaveCourse()
+    {
+        
     }
 
     public class GraphQLQuery
