@@ -68,6 +68,11 @@
                 cursor: pointer;
             }
 
+            button {
+                background: none;
+                border: none;
+            }
+
             .bestSeller {
                 background-color: #22C55E;
                 color: #ffffff;
@@ -90,6 +95,10 @@
 
                     &:hover {
                         color: #6366F1;
+                    }
+
+                    &.saved {
+                        color: forestgreen;
                     }
                 }
 

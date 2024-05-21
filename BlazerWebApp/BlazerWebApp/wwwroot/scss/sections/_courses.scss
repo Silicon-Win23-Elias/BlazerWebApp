@@ -105,6 +105,11 @@
                     cursor: pointer;
                 }
 
+                button {
+                    background: none;
+                    border: none;
+                }
+
                 .bestSeller {
                     background-color: $success;
                     color: #ffffff;
@@ -127,6 +132,10 @@
 
                         &:hover {
                             color: $theme;
+                        }
+
+                        &.saved {
+                            color: forestgreen;
                         }
                     }
 
