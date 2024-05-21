@@ -14,6 +14,8 @@
   <ItemGroup>
     <ProjectReference Include="..\BlazerWebApp.Client\BlazerWebApp.Client.csproj" />
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.17.5" />
+    <PackageReference Include="GraphQL.Client" Version="6.0.5" />
+    <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="6.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.4" />
