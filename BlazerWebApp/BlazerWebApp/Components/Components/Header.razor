@@ -6,7 +6,7 @@
 
             <AuthorizeView>
                 <Authorized>
-                    <a href="/account/details"><img src="/images/profile_placeholder.jpg" alt=""></a>
+                    <a href="/account/details"><img src="@(string.IsNullOrEmpty(ProfileImageService.ProfileImageUrl) ? "/images/profile_placeholder.jpg" : ProfileImageService.ProfileImageUrl)" alt=""></a>
                 </Authorized>
             </AuthorizeView>
 
@@ -37,5 +37,20 @@
 </header>
 
 @code {
+    public ApplicationUser User { get; set; } = new();
 
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrEmpty(ProfileImageService.ProfileImageUrl))
+        {
+            var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var userClaims = authenticationState.User;
+
+            if (userClaims != null)
+            {
+                User = await UserManager.GetUserAsync(userClaims);
+                ProfileImageService.ProfileImageUrl = User!.ProfileImageUrl;
+            }
+        } 
+    }
 }

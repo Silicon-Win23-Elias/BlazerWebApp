@@ -1,13 +1,15 @@
-﻿
+﻿@using System.Net.Http.Headers
+@using Newtonsoft.Json
+
 
 
 <div class="profile">
     <div class="image">
-        <img src="/images/profile_placeholder.jpg" alt="Profile Image">
-        <form>
-            <input id="uploadFile" type="file" name="file" hidden />
+        <img src="@(string.IsNullOrEmpty(UserProfile.ImageUrl) ? "/images/profile_placeholder.jpg" : UserProfile.ImageUrl)" alt="Profile Image">
+        <EditForm FormName="fileUpload" Model="FileForm" Enctype="multipart/form-data">
+            <InputFile OnChange="HandleForm" accept="image/" id="uploadFile" name="file" hidden />
             <label for="uploadFile" class="upload fa-solid fa-arrows-rotate"></label>
-        </form>
+        </EditForm>
     </div>
     <div class="">
         <h5>@UserProfile.FirstName @UserProfile.LastName</h5>
@@ -30,11 +32,15 @@
 @code {
     [SupplyParameterFromQuery]
     private string? Email { get; set; }
-    
+
+    [SupplyParameterFromForm]
+    public FileUploadModel FileForm { get; set; } = new();
+
     [Parameter]
     public ApplicationUser User { get; set; } = null!;
 
     public UserModel UserProfile { get; set; } = new();
+    public ReturnUrl ImageUrlModel { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -43,6 +49,52 @@
             UserProfile.FirstName = User.FirstName;
             UserProfile.LastName = User.LastName;
             UserProfile.Email = User.Email!;
+            UserProfile.ImageUrl = User.ProfileImageUrl;
+        }
+    }
+
+    private async Task HandleForm(InputFileChangeEventArgs e)
+    {
+        if (e.File != null)
+        {
+            var buffer = new byte[e.File.Size];
+            using (var stream = e.File.OpenReadStream())
+            {
+                await stream.ReadAsync(buffer, 0, (int)e.File.Size);
+            }
+            FileForm.File = new FormFile(new MemoryStream(buffer), 0, e.File.Size, e.File.Name, e.File.Name);
+
+            await HandleSubmit();
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        var content = new MultipartFormDataContent();
+        content.Add(new StreamContent(FileForm.File.OpenReadStream()), "file", FileForm.File.FileName);
+
+        var response = await Http.PostAsync("https://fileprovidersilicon.azurewebsites.net/api/Upload?code=Nm7k4Uo1fWs2StOObEVS8WpMs3BUZwXzFm3gQMp3gcEVAzFuIbOA9Q%3D%3D&containerName=profile", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var jsonString = await response.Content.ReadAsStringAsync();
+            ImageUrlModel = JsonConvert.DeserializeObject<ReturnUrl>(jsonString)!;
+
+            UserProfile.ImageUrl = ImageUrlModel.FilePath;
+            await UpdateUser(ImageUrlModel.FilePath);
+            ProfileImageService.ProfileImageUrl = ImageUrlModel.FilePath;
+            NavigationManager.NavigateTo(NavigationManager.Uri, true);
+        }
+    }
+
+    private async Task UpdateUser(string imageUrl)
+    {
+        var user = await UserManager.FindByEmailAsync(User.Email!);
+
+        if (user != null)
+        {
+            user.ProfileImageUrl = imageUrl;
+            await UserManager.UpdateAsync(user);
         }
     }
 
@@ -51,10 +103,31 @@
         RedirectManager.RedirectTo("Account/Logout");
     }
 
+    public class FileUploadModel
+    {
+        public IFormFile File { get; set; } = null!;
+    }
+
+    public class ReturnUrl
+    {
+        public string FileName { get; set; } = null!;
+        public string FilePath { get; set; } = null!;
+        public string? ContentType { get; set; }
+        public string? ContainerName { get; set; }
+    }
+
+    public class FileFormModel
+    {
+        public byte[] FileContent { get; set; } = null!;
+        public string FileName { get; set; } = null!;
+        public string ContentType { get; set; } = null!;
+    }
+
     public class UserModel
     {
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
         public string Email { get; set; } = null!;
+        public string? ImageUrl { get; set; }
     }
 }
