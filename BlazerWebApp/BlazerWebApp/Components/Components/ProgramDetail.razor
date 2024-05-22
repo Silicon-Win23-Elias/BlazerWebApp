@@ -1,11 +1,23 @@
-﻿<div class="program">
-    <img id="programDetailsImg" src="/images/1-program.svg" alt="">
-    <div class="program-text">
-        <p class="lead-text">Introduction. Getting started</p>
-        <p class="m-text">Nulla faucibus mauris pellentesque blandit faucibus non. Sit ut et at suspendisse gravida hendrerit tempus placerat.</p>
+﻿@using BlazerWebApp.Models
+
+@foreach (ProgramDetailObject details in ContentModel.ProgramDetails)
+{
+    <div class="program">
+        <img id="programDetailsImg" src="@($" /images/{Increment}-program.svg")" alt="">
+
+        <div class="program-text">
+            <p class="lead-text">@details.Title</p>
+            <p class="m-text">@details.Description</p>
+        </div>
     </div>
-</div>
+
+    Increment++;
+}
+
 
 @code {
+    [Parameter]
+    public ContentObject ContentModel { get; set; } = new();
 
+    public int Increment { get; set; } = 1;
 }

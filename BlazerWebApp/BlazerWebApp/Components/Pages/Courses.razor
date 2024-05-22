@@ -32,7 +32,7 @@
                         <p class="bestSeller">Best seller</p>
                     }
 
-                    <a class="oneCourseLink">
+                    <a href="@("/course?courseid=" + course.Id)" class="oneCourseLink">
                         <img src="@course.ImageUri" alt="Image from the course">
                         <div class="course-info">
                             <h5 class="header5">@course.Title</h5>
@@ -72,6 +72,9 @@
 </section>
 
 @code {
+    [SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+
     public CourseCardModel courseCardModel = new();
     public SaveCourseModel courseIdModel = new();
     public List<CourseCardModel> courseList { get; set; } = [];
@@ -106,6 +109,11 @@
             SavedCourses.Add(course.CourseId);
         }
     }
+
+    // private void NavigateToCourse(string courseId)
+    // {
+    //     RedirectManager.RedirectTo("/Course", new() { ["courseId"] = courseId, ["returnUrl"] = ReturnUrl });
+    // }
 
     private async Task SaveCourseToUser(string courseId)
     {
