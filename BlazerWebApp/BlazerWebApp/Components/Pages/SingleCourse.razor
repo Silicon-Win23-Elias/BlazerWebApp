@@ -1,27 +1,62 @@
 ﻿@page "/Course"
+@using Newtonsoft.Json
+@rendermode InteractiveServer
+@using BlazerWebApp.Models
 
 <section class="single-course-section">
-    <img class="bkg-img" src="images/course1.svg" alt="Course image">
-    <div class="container">
-        <UpperSection />
-        <div class="course-info">
-            <CourseDescription />
-            <JoinCourse />
-        </div>
+    @if (CourseCardModel != null)
+    {
+        <img class="bkg-img" src="@CourseCardModel.ImageHeaderUri" alt="Course image">
 
-        <div class="program-details">
-            <h2 class="display6">Program Details</h2>
+        <div class="container">
+            <UpperSection CourseCardModel="CourseCardModel" />
+            <div class="course-info">
+                <CourseDescription />
+                <JoinCourse ContentModel="CourseCardModel" />
+            </div>
 
-            <ProgramDetail />
-            <ProgramDetail />
-            <ProgramDetail />
-            <ProgramDetail />
-            <ProgramDetail />
-            <ProgramDetail />
+            <div class="program-details">
+                <h2 class="display6">Program Details</h2>
+                <ProgramDetail ContentModel="ContentModel" />
+            </div>
         </div>
-    </div>
+    }
+    else
+    {
+        <p>Loading course data...</p>
+    }
+    
 </section>
 
 @code {
+    [SupplyParameterFromQuery]
+    private string? CourseId { get; set; }
 
+    public ContentObject ContentModel { get; set; } = null!;
+    public CourseCardModel CourseCardModel { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetSingleCourse();
+    }
+
+    public async Task GetSingleCourse()
+    {
+        var query = new GraphQLQuery { Query = $"query {{ getCourseById(id: \"{CourseId}\") {{ id title imageUri imageHeaderUri isBestSeller isDigital categories subtitle starRating reviews likesPercent likes duration authors {{ name }} prices {{ currency price discount }} content {{ description includes programDetails {{ id title description }} }} }} }}" };
+        var response = await Http.PostAsJsonAsync("https://courseprovider-silicon-hl.azurewebsites.net/api/graphql?code=7HxNcs9s7LTbK8xSkGVLN9W6v5XDgOJCcj_D31kwYSgGAzFu9L-qMg%3D%3D", query);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var jsonString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<RootObject>(jsonString);
+
+            CourseCardModel = result!.Data.getCourseById;
+            ContentModel = CourseCardModel.Content;
+        }
+    }
+
+    public class GraphQLQuery
+    {
+        public string Query { get; set; } = null!;
+    }
 }
