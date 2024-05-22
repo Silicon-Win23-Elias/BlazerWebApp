@@ -628,6 +628,7 @@ a:hover {
 }
 .courses-section .container .courses-all .oneCourse .oneCourseLink img {
   width: 100%;
+  height: 200px;
   border-radius: 6px;
 }
 .courses-section .container .courses-all .oneCourse .oneCourseLink .course-info .header5 {

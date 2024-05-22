@@ -36,7 +36,7 @@
                         <img src="@course.ImageUri" alt="Image from the course">
                         <div class="course-info">
                             <h5 class="header5">@course.Title</h5>
-                            <p class="author">By Robert Fox</p>
+                            <p class="author">By @course.Authors[0].Name</p>
                             <div class="prices">
 
                                 @if (course.Prices!.Discount == 0)
