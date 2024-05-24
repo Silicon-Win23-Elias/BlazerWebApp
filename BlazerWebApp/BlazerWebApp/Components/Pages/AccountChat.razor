@@ -1,0 +1,35 @@
+﻿@page "/account/chat"
+@using BlazerWebApp.Client.Components.Components
+@rendermode InteractiveServer
+@* @attribute [Microsoft.AspNetCore.Authorization.Authorize]
+ *@
+<section id="account">
+    <div class="container">
+        
+        <AccountLeftSide User="user" />
+        <Chat User="claims" />
+
+        @* @if (user != null)
+        {
+            
+        }
+        else
+        {
+            <p>Loading user data...</p>
+        } *@
+
+    </div>
+</section>
+
+@code {
+    private ApplicationUser user { get; set; } = null!;
+    private ClaimsPrincipal claims { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        claims = authenticationState.User;
+
+        user = await UserManager.GetUserAsync(claims);
+    }
+}
