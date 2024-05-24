@@ -10,9 +10,9 @@
 <div id="chat" class="row">
     <div class="col">
         <div class="card">
-            <div class="card-header">Silicon Chat</div>
+            <div class="card-header">Chat with an admin</div>
             <div class="card-body">
-                <ul class="list-group">
+                <ul class="list-group chat-window">
                     @foreach (var message in messages)
                     {
                         <li class="mb-3 list-group-item @(message.UserName == userName ? "chat-bubble-right" : "chat-bubble-left")">
@@ -91,7 +91,7 @@
         connection.On<string, string, DateTime>("ReceiveMessage", (fromUser, message, dateTime) =>
         {
             var newMessage = new ChatMessage { UserName = fromUser, Message = message, Created = dateTime };
-            messages.Add(newMessage);
+            messages.Insert(0, newMessage);
             InvokeAsync(StateHasChanged);
         });
 

@@ -10,6 +10,13 @@
         flex: 3;
     }
 
+    .chat-window {
+        height: 600px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column-reverse;
+    }
+
     .chat-bubble-right {
         text-align: right;
         background-color: $theme;
@@ -27,5 +34,8 @@
         border-radius: 15px;
         padding: 10px;
         max-width: 75%;
+    }
+
+    .list-group-item {
     }
 }

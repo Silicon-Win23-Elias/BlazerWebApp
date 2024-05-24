@@ -1787,6 +1787,12 @@ header .container .btn-mobile {
     flex: 3;
   }
 }
+#chat .chat-window {
+  height: 600px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse;
+}
 #chat .chat-bubble-right {
   text-align: right;
   background-color: #6366F1;
