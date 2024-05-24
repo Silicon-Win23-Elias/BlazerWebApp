@@ -1,6 +1,7 @@
 using BlazerWebApp.Components;
 using BlazerWebApp.Components.Account;
 using BlazerWebApp.Data;
+using BlazerWebApp.Hubs;
 using BlazerWebApp.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -19,6 +20,7 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
 builder.Services.AddSingleton<ProfileImageService>();
+builder.Services.AddSignalR();
 
 builder.Services.AddAuthentication(options =>
     {
@@ -71,5 +73,5 @@ app.MapRazorComponents<App>()
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
-
+app.MapHub<ChatHub>("/chathub");
 app.Run();

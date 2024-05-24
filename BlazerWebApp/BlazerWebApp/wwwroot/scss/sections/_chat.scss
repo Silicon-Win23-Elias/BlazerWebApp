@@ -1,0 +1,31 @@
+#chat {
+    flex: 2;
+
+    @media(min-width: 768px) {
+        padding-left: 30px;
+    }
+
+    @media(min-width: 992px) {
+        padding-left: 100px;
+        flex: 3;
+    }
+
+    .chat-bubble-right {
+        text-align: right;
+        background-color: $theme;
+        color: #FFFFFF;
+        margin-left: auto;
+        border-radius: 15px;
+        padding: 10px;
+        max-width: 75%;
+    }
+
+    .chat-bubble-left {
+        text-align: left;
+        background-color: #c1d1fe;
+        margin-right: auto;
+        border-radius: 15px;
+        padding: 10px;
+        max-width: 75%;
+    }
+}

@@ -48,7 +48,11 @@
             if (userClaims != null)
             {
                 User = await UserManager.GetUserAsync(userClaims);
-                ProfileImageService.ProfileImageUrl = User!.ProfileImageUrl;
+
+                if (User != null)
+                {
+                    ProfileImageService.ProfileImageUrl = User!.ProfileImageUrl;
+                }
             }
         } 
     }
