@@ -41,6 +41,21 @@
 
     public async Task GetSingleCourse()
     {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var claims = authenticationState.User;
+
+        var user = await UserManager.GetUserAsync(claims);
+
+        if (HttpContextAccessor.HttpContext!.Request.Cookies.TryGetValue("AccessToken", out var token))
+        {
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+        else
+        {
+            await CookieService.GetToken(user.Id, user.Email!);
+            NavigationManager.NavigateTo(NavigationManager.Uri, true);
+        }
+
         var query = new GraphQLQuery { Query = $"query {{ getCourseById(id: \"{CourseId}\") {{ id title imageUri imageHeaderUri isBestSeller isDigital categories subtitle starRating reviews likesPercent likes duration authors {{ name }} prices {{ currency price discount }} content {{ description includes programDetails {{ id title description }} }} }} }}" };
         var response = await Http.PostAsJsonAsync("https://courseprovider-silicon-hl.azurewebsites.net/api/graphql?code=7HxNcs9s7LTbK8xSkGVLN9W6v5XDgOJCcj_D31kwYSgGAzFu9L-qMg%3D%3D", query);
 

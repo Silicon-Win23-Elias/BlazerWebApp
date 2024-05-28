@@ -73,6 +73,14 @@
 
     private async Task OnValidSubmit()
     {
+        if (HttpContextAccessor.HttpContext!.Request.Cookies.TryGetValue("AccessToken", out var token))
+        {
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+        else
+        {
+            await CookieService.GetToken(Email, Email!);
+        }
         var result = await Http.PostAsJsonAsync("https://verificationprovider-silicon-hl.azurewebsites.net/api/validate?code=XeJPP7EcDM1weH1kDVqcrSuK0xNZtxEQx6gNwD8NSqjIAzFuLbSlcw==", new { Email = Email, Code = ConfirmForm.Code });
 
         if (result.IsSuccessStatusCode)

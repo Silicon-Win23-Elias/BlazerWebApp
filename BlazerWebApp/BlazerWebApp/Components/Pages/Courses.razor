@@ -1,6 +1,8 @@
 ﻿@page "/Courses"
 @rendermode InteractiveServer
+@using Microsoft.Azure.ServiceBus
 @using Newtonsoft.Json
+@using System.Text
 
 <section class="courses-section">
     <div class="container">
@@ -21,7 +23,7 @@
             {
                 <div class="oneCourse">
                     <div class="btn-tooltip">
-                        <EditForm FormName="@course.Id" Model="courseIdModel" OnValidSubmit="(() => SaveCourseToUser(course.Id))" method="post">
+                        <EditForm FormName="@course.Id" Model="courseIdModel" OnValidSubmit="(() => SaveCourseToUser(course.Id, course.Title))" method="post">
                             <InputText @bind-Value="courseIdModel.CourseId" hidden class="tool-tip">Save</InputText>
                             <button class="saveCourseBtn @(SavedCourses.Contains(course.Id) ? "saved" : "")"> <i class=" fa-sharp fa-regular fa-circle-bookmark"></i></button>
                         </EditForm>
@@ -63,12 +65,6 @@
 
         </div>
     </div>
-    <div class="page-numbers">
-        <a asp-action="Index" asp-controller="Courses" asp-route-pageNumber="" class="arrow">&lt;</a>
-        <a asp-action="Index" asp-controller="Courses" asp-route-pageNumber="1" class="number active">1</a>
-        <a asp-action="Index" asp-controller="Courses" asp-route-pageNumber="" class="number">2</a>
-        <a asp-action="Index" asp-controller="Courses" asp-route-pageNumber="" class="number">3</a>
-    </div>
 </section>
 
 @code {
@@ -83,6 +79,21 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userClaims = authenticationState.User;
+
+        User = await UserManager.GetUserAsync(userClaims);
+
+        if (HttpContextAccessor.HttpContext!.Request.Cookies.TryGetValue("AccessToken", out var token))
+        {
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+        else
+        {
+            await CookieService.GetToken(User.Id, User.Email);
+            NavigationManager.NavigateTo(NavigationManager.Uri, true);
+        }
+
         var query = new GraphQLQuery { Query = "query { getCourses { id isBestSeller imageUri title authors {name} prices {price currency discount} duration likesPercent likes } }" };
         var response = await Http.PostAsJsonAsync("https://courseprovider-silicon-hl.azurewebsites.net/api/graphql?code=7HxNcs9s7LTbK8xSkGVLN9W6v5XDgOJCcj_D31kwYSgGAzFu9L-qMg%3D%3D", query);
 
@@ -97,11 +108,6 @@
             }
         }
 
-        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var userClaims = authenticationState.User;
-
-        User = await UserManager.GetUserAsync(userClaims);
-
         var userCourses =  Context.UserCourses.Where(x => x.UserId == User.Id).ToList();
 
         foreach (var course in userCourses)
@@ -110,12 +116,56 @@
         }
     }
 
-    // private void NavigateToCourse(string courseId)
-    // {
-    //     RedirectManager.RedirectTo("/Course", new() { ["courseId"] = courseId, ["returnUrl"] = ReturnUrl });
-    // }
+    private string ServiceBusConnectionString = "Endpoint=sb://sb-silicon-win23.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=7je223OiCW11ESQNMmAQ33wCVCN0FPEl4+ASbGEjRPA=";
 
-    private async Task SaveCourseToUser(string courseId)
+    public async Task Send(string email, string title)
+    {
+        try
+        {
+            var newEmail = GenerateEmail(email, title);
+            var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(newEmail)));
+
+            var queueClient = new QueueClient(ServiceBusConnectionString, "email_request");
+            await queueClient.SendAsync(message);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
+
+    public EmailRequest GenerateEmail(string email, string title)
+    {
+        if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(title))
+        {
+            var emailRequest = new EmailRequest()
+                {
+                    To = email,
+                    Subject = "Course Saved",
+                    HtmlBody = $@"
+        <html lang='en'>
+            <head>
+                <meta charset='UTF-8'>
+                <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                <title>Verification Code</title>
+            </head>
+            <body>
+                <div style='color: #191919; max-width: 500px'>
+                    <h1 style='font-weight: 600; font-size: 48px'>Congratulations to your purchase</h1>
+                    <p style='font-weight: 600; font-size:32px;'>Have fun with {title}</p>
+                </div>
+            </body>
+            </html>
+        ",
+                    PlainText = $"Have fun with {title}",
+                };
+            return emailRequest;
+        }
+
+        return new EmailRequest();
+    }
+
+    private async Task SaveCourseToUser(string courseId, string title)
     {
         if (User != null)
         {
@@ -132,6 +182,7 @@
                 Context.Add(userCourse);
                 await Context.SaveChangesAsync();
                 SavedCourses.Add(courseId);
+                await Send(User.Email!, title);
             }
             else
             {
@@ -202,5 +253,13 @@
     public class SaveCourseModel
     {
         public String CourseId { get; set; } = null!;
+    }
+
+    public class EmailRequest
+    {
+        public string To { get; set; } = null!;
+        public string Subject { get; set; } = null!;
+        public string HtmlBody { get; set; } = null!;
+        public string PlainText { get; set; } = null!;
     }
 }

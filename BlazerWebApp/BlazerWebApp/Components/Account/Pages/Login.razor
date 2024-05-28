@@ -1,19 +1,17 @@
 ﻿@page "/Account/Login"
+@using Newtonsoft.Json
+@using System.Text
 
 <PageTitle>Log in</PageTitle>
 
 <section class="signin-section">
     <div class="container">
         <div class="signin-form">
-            @* <p class="text-success">@TempData["WasDeleted"]</p> *@
             <h1 class="header1">Welcome Back</h1>
             <p class="m-text">Don’t have an account yet? <NavLink class="signup-link" href="signup">Sign up here.</NavLink></p>
             <StatusMessage Message="@errorMessage" />
             <EditForm FormName="login" Model="Input" OnValidSubmit="LoginUser" method="post" novalidate>
                 <DataAnnotationsValidator />
-                @*              <div class="error-message">
-                @ViewData["ErrorMessage"]
-                </div> *@
                 <label for="signInEmail">Email</label>
                 <ValidationMessage For="@(() => Input.Email)" />
                 <InputText @bind-Value="Input.Email" id="signInEmail" type="email" class="userinput" placeholder="Enter your email address" />
@@ -65,8 +63,10 @@
         var result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
         if (result.Succeeded)
         {
+            await CookieService.GetToken(Input.Email, Input.Email);
+
             Logger.LogInformation("User logged in.");
-            RedirectManager.RedirectTo(ReturnUrl);
+            RedirectManager.RedirectTo(ReturnUrl);         
         }
         else if (result.RequiresTwoFactor)
         {
@@ -83,6 +83,12 @@
         {
             errorMessage = "Error: Invalid login attempt.";
         }
+    }
+
+    public class TokenResponse
+    {
+        public string RefreshToken { get; set; } = null!;
+        public string AccessToken { get; set; } = null!;
     }
 
     private sealed class InputModel

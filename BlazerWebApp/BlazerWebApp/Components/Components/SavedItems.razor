@@ -1,4 +1,5 @@
 ﻿@using Newtonsoft.Json
+
 <div class="saved-items">
     <div class="title-btn">
         <h1>Saved Items</h1>
@@ -68,8 +69,19 @@
         {
             var courseList = Context.UserCourses.Where(x => x.UserId == User.Id).ToList();
 
+            if (HttpContextAccessor.HttpContext!.Request.Cookies.TryGetValue("AccessToken", out var token))
+            {
+                Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+            else
+            {
+                await CookieService.GetToken(User.Id, User.Email!);
+                NavigationManager.NavigateTo(NavigationManager.Uri, true);
+            }
+
             foreach (var course in courseList)
             {
+
                 var query = new GraphQLQuery { Query = $"query {{ getCourseById(id: \"{course.CourseId}\") {{ id title imageUri isBestSeller likesPercent likes duration authors {{ name }} prices {{ currency price discount }} }} }}" };
                 var response = await Http.PostAsJsonAsync("https://courseprovider-silicon-hl.azurewebsites.net/api/graphql?code=7HxNcs9s7LTbK8xSkGVLN9W6v5XDgOJCcj_D31kwYSgGAzFu9L-qMg%3D%3D", query);
 
