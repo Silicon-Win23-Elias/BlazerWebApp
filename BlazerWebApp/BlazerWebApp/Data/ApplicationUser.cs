@@ -8,7 +8,7 @@ public class ApplicationUser : IdentityUser
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
     public string ContactEmail { get; set; } = null!;
-    public string? ProfileImageUrl { get; set; } = "https://siliconstorageacc.blob.core.windows.net/profile/4cc8cd4d-5e41-4b02-af5d-7c36629933f3_profile_placeholder.jpg";
+    public string? ProfileImageUrl { get; set; } = "https://siliconstorageacc.blob.core.windows.net/profile/62d3a08c-ffe5-4e31-a771-d112dd4ea5c3_38661739-8e41-4bb0-b59f-1e0d68ef8ebc_send-you-a-random-png.png";
     public string? Bio { get; set; }
     public bool IsSubscribed { get; set; } = false;
     public bool CodeVerified { get; set; } = false;
