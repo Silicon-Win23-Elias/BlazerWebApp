@@ -17,7 +17,7 @@
             }
 
             .m-text {
-                color: #565973;
+                color: $gray-700;
             }
 
             .header1 {
@@ -34,7 +34,7 @@
                     font-weight: 600;
                     margin: 0;
                     display: inline;
-                    color: #33354D;
+                    color: $gray-900;
                 }
 
                 span {
@@ -47,13 +47,14 @@
                     margin-top: 0.2rem;
                     margin-bottom: 1rem;
                     border-radius: 6px;
-                    border: 1px solid #D4D7E5;
+                    border: 1px solid $gray-300;
                     height: 2.5rem;
                     width: 25vw;
                     min-width: 100%;
                     padding-left: 0.8rem;
                     padding-right: 0.8rem;
                     display: block;
+                    background-color: $white;
 
                     &::placeholder {
                         color: #B4B7C9;
@@ -79,7 +80,7 @@
                     label {
                         display: inline;
                         font-weight: 400;
-                        color: #565973;
+                        color: $gray-900;
                     }
 
                     button {

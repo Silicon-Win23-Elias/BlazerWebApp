@@ -12,7 +12,7 @@
 
     label {
         font-weight: 600;
-        color: #0B0F19;
+        color: $gray-900;
     }
 
     h1 {
@@ -24,7 +24,7 @@
     }
 
     h4 {
-        color: #6366F1;
+        color: $gray-700;
         text-align: center;
 
         @media(min-width: 768px) {
@@ -79,11 +79,12 @@
     .input {
         display: block;
         width: 100%;
-        border: 1px solid #E2E5F1;
+        border: 1px solid $gray-300;
         border-radius: 8px;
         outline-color: #6366F1;
         padding: 12px 10px;
-        background-color: #FFFFFF;
+        background-color: $white;
+        color: $gray-700;
 
         &:disabled {
             background-color: #E2E5F1;

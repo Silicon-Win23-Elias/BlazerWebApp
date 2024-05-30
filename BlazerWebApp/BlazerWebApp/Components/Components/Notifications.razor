@@ -1,8 +1,10 @@
-﻿<div class="notifications">
+﻿@rendermode InteractiveServer
+
+<div class="notifications">
     <h1>Notifications</h1>
     <EditForm FormName="ContactEmailForm" Model="EmailForm" OnValidSubmit="OnSubmit" id="notifications" method="post" novalidate class="basic-info">
         <h5 class="message @((ErrorMessage != "Success!") ? "error" : "success")">@ErrorMessage</h5>
-       
+
         <DataAnnotationsValidator />
         <div class="label-input">
             <label>Preferred email for notifications</label>
@@ -38,7 +40,7 @@
             <button type="reset" class="btn-gray">Cancel</button>
             <button type="submit" class="btn-theme">Save changes</button>
         </div>
-    </EditForm>    
+    </EditForm>
 </div>
 
 @code {
@@ -70,6 +72,25 @@
             user.IsSubscribed = EmailForm.Subscribed;
             await UserManager.UpdateAsync(user);
             ErrorMessage = "Success!";
+
+            ProfileImageService.Darkomode = user.DarkmodeActive;
+            NavigationManager.NavigateTo(NavigationManager.Uri, true);
+
+
+            // if (user.DarkmodeActive == true)
+            // {
+            //     if (!HttpContextAccessor.HttpContext!.Request.Cookies.TryGetValue("Darkomode", out var token))
+            //     {
+            //         HttpContextAccessor.HttpContext!.Response.Cookies.Append("Darkomode", "darkomode");
+            //     }
+            //     else
+            //     {
+            //         if (HttpContextAccessor.HttpContext!.Request.Cookies.TryGetValue("Darkomode", out var token2))
+            //         {
+                        
+            //         }
+            //     }
+            // } 
         }
         else
         {

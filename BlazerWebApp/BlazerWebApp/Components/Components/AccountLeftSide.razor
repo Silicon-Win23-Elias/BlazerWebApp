@@ -24,7 +24,7 @@
         <form action="Account/Logout" method="post">
             <AntiforgeryToken />
             <input type="hidden" name="ReturnUrl" value="" />
-            <button type="submit" class="btn-theme"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button>
+            <button @onclick="SignOut" type="submit" class="btn-theme"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button>
         </form> 
     </div>
 </div>
@@ -100,7 +100,7 @@
 
     private void SignOut()
     {
-        RedirectManager.RedirectTo("Account/Logout");
+        ProfileImageService.Darkomode = false;
     }
 
     public class FileUploadModel

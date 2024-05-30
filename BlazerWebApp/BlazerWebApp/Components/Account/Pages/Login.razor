@@ -63,6 +63,24 @@
         var result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
         if (result.Succeeded)
         {
+            var user = Context.Users.FirstOrDefault(x => x.Email == Input.Email);
+
+            if (user != null)
+            {
+                ProfileImageService.Darkomode = user.DarkmodeActive;
+            }
+            // if (user != null)
+            // {
+            //     if (user.DarkmodeActive == true)
+            //     {
+            //         HttpContextAccessor.HttpContext!.Response.Cookies.Append("Darkomode", "darkomode, yayayaya");
+            //     }
+            //     else
+            //     {
+            //         HttpContextAccessor.HttpContext!.Response.Cookies.Delete("Darkomode");
+            //     }
+            // }
+
             await CookieService.GetToken(Input.Email, Input.Email);
 
             Logger.LogInformation("User logged in.");

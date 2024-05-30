@@ -71,6 +71,9 @@
     [SupplyParameterFromQuery]
     public string? ReturnUrl { get; set; }
 
+    [Inject]
+    protected IConfiguration Configuration { get; set; }
+
     public CourseCardModel courseCardModel = new();
     public SaveCourseModel courseIdModel = new();
     public List<CourseCardModel> courseList { get; set; } = [];
@@ -124,8 +127,9 @@
         {
             var newEmail = GenerateEmail(email, title);
             var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(newEmail)));
+            var cs = Environment.GetEnvironmentVariable("EmailProviderServiceBus");
+            var queueClient = new QueueClient(Configuration["MySettings:EmailSB"], "email_request");
 
-            var queueClient = new QueueClient(ServiceBusConnectionString, "email_request");
             await queueClient.SendAsync(message);
         }
         catch (Exception e)

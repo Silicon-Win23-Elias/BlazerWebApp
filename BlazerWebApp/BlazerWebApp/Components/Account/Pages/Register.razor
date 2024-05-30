@@ -75,15 +75,16 @@
     [SupplyParameterFromForm]
     public SignUpFormModel SignUpForm { get; set; } = new();
 
-    private string ServiceBusConnectionString = "Endpoint=sb://sb-silicon-hl.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=8q4LwR2nJFJtDW2ggc49CnbClwaD+yGBd+ASbGs0X38=";
+    [Inject]
+    protected IConfiguration Configuration { get; set; }
 
     public async Task Send(string email)
     {
         try
         {
-            var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new EmailModel {Email = email})));
+            var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new EmailModel { Email = email })));
 
-            var queueClient = new QueueClient(ServiceBusConnectionString, "verification_request");
+            var queueClient = new QueueClient(Configuration["MySettings:VerificationSB"], "verification_request");
             await queueClient.SendAsync(message);
         }
         catch (Exception e)
